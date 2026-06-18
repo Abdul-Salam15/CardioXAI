@@ -1,0 +1,43 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg-info/
+dist/
+build/
+*.egg
+
+# Django
+db.sqlite3
+db.sqlite3-journal
+*.log
+
+# Virtual env
+venv/
+env/
+.env
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Large data files (download via pipeline)
+data/*.csv
+
+# Large model files (retrain via pipeline)
+models_store/rf_model.joblib
+models_store/splits.joblib
+
+# Node
+node_modules/
+
+# Misc
+/tmp/
+*.tmp

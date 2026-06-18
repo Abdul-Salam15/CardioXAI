@@ -1,0 +1,117 @@
+{% extends "core/base.html" %}
+{% block title %}About — CardioXAI{% endblock %}
+
+{% block content %}
+<!-- HERO -->
+<div style="background: linear-gradient(to bottom, #eef4fe, #ffffff); border-bottom: 1px solid #e5e7eb;">
+  <div class="container py-5" style="max-width: 56rem;">
+    <div class="d-inline-flex align-items-center gap-2 border rounded-pill px-3 py-1 mb-4" style="border-color: rgba(26,115,232,0.2) !important; color: var(--cx-blue); font-size: 0.75rem; font-weight: 700;">
+      <svg viewBox="0 0 24 24" width="14" height="14" fill="var(--cx-blue)"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+      ABOUT CARDIOXAI
+    </div>
+    <h1 class="display-5 section-title lh-sm mb-3">A transparency-first approach to coronary heart disease risk screening</h1>
+    <p class="lead text-secondary" style="max-width: 44rem;">CardioXAI is an academic research project built to explore whether self-reported lifestyle and health data — with no blood tests, no clinical appointments, and no specialist access — can produce meaningful, explainable coronary heart disease risk estimates for general-public users.</p>
+  </div>
+</div>
+
+<!-- STATS STRIP -->
+<div style="border-bottom: 1px solid #e5e7eb;">
+  <div class="container py-4" style="max-width: 56rem;">
+    <div class="row g-4 text-center">
+      <div class="col-6 col-md-3">
+        <div style="font-size: 1.75rem; font-weight: 900; color: var(--cx-blue);">230,000+</div>
+        <div class="small fw-semibold text-secondary mt-1">Training observations</div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div style="font-size: 1.75rem; font-weight: 900; color: var(--cx-green);">16</div>
+        <div class="small fw-semibold text-secondary mt-1">Self-reported features</div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div style="font-size: 1.75rem; font-weight: 900; color: var(--cx-amber);">3</div>
+        <div class="small fw-semibold text-secondary mt-1">Models evaluated</div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div style="font-size: 1.75rem; font-weight: 900; color: var(--cx-red);">SHAP &amp; LIME</div>
+        <div class="small fw-semibold text-secondary mt-1">Explainability methods</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CARDS -->
+<div class="container py-5" style="max-width: 56rem;">
+  <div class="d-flex flex-column gap-4">
+
+    <!-- Card 1 -->
+    <div class="card-cx overflow-hidden">
+      <div style="height: 6px; background: linear-gradient(to right, var(--cx-blue), #5b9cf6);"></div>
+      <div class="p-4">
+        <div class="d-flex align-items-start gap-4">
+          <div class="d-flex align-items-center justify-content-center rounded-3 flex-shrink-0" style="width:48px; height:48px; background:#eef4fe;">
+            <i class="bi bi-heart-pulse fs-4" style="color: var(--cx-blue);"></i>
+          </div>
+          <div>
+            <h5 class="fw-bold mb-2">What is CardioXAI?</h5>
+            <p class="small text-secondary mb-0">Most cardiovascular risk tools require laboratory inputs — cholesterol readings, fasting glucose, ECG results — that are inaccessible to millions of people without a clinical appointment. CardioXAI was designed around a different premise: that behavioral and demographic data alone, when processed through an explainable machine learning pipeline, can provide actionable risk awareness. Every prediction comes with a SHAP-based breakdown showing exactly which factors drove the score — not just a number, but a reason. LIME (Local Interpretable Model-Agnostic Explanations) is used alongside SHAP to provide a second independent explanation layer, increasing interpretability robustness.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card 2 -->
+    <div class="card-cx overflow-hidden">
+      <div style="height: 6px; background: linear-gradient(to right, var(--cx-green), #4caf50);"></div>
+      <div class="p-4">
+        <div class="d-flex align-items-start gap-4">
+          <div class="d-flex align-items-center justify-content-center rounded-3 flex-shrink-0" style="width:48px; height:48px; background:#eafbe7;">
+            <i class="bi bi-grid-3x3-gap fs-4" style="color: var(--cx-green);"></i>
+          </div>
+          <div>
+            <h5 class="fw-bold mb-2">How does the model work?</h5>
+            <p class="small text-secondary mb-2">Three models were trained on the CDC Behavioral Risk Factor Surveillance System (BRFSS) 2022 dataset — over 246,000 adult observations across 21 self-reported features. Logistic Regression, Random Forest, and XGBoost were evaluated independently; the two best-performing models — Logistic Regression and XGBoost — form a weighted consensus ensemble used for final predictions.</p>
+            <p class="small text-secondary mb-3">When the ensemble members disagree significantly, the system flags a <span class="fw-bold" style="color: var(--cx-red);">Low Confidence</span> result and routes the user toward professional consultation rather than acting on an uncertain score.</p>
+            <div class="d-flex flex-wrap gap-2">
+              <span class="badge rounded-pill fw-bold" style="background: #eef4fe; color: var(--cx-blue); padding: 6px 12px;">Logistic Regression</span>
+              <span class="badge rounded-pill fw-bold" style="background: #fff4e0; color: var(--cx-amber); padding: 6px 12px;">XGBoost</span>
+              <span class="badge rounded-pill fw-bold" style="background: #f3f4f6; color: var(--cx-gray); padding: 6px 12px;">Consensus Ensemble</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card 3 -->
+    <div class="card-cx overflow-hidden">
+      <div style="height: 6px; background: linear-gradient(to right, var(--cx-amber), #ffb74d);"></div>
+      <div class="p-4">
+        <div class="d-flex align-items-start gap-4">
+          <div class="d-flex align-items-center justify-content-center rounded-3 flex-shrink-0" style="width:48px; height:48px; background:#fff4e0;">
+            <i class="bi bi-mortarboard fs-4" style="color: var(--cx-amber);"></i>
+          </div>
+          <div>
+            <h5 class="fw-bold mb-2">Who built this?</h5>
+            <p class="small text-secondary mb-0">CardioXAI was developed as an undergraduate academic research project in applied machine learning and explainable AI. It is a proof-of-concept system — not a registered medical device, not clinically validated, and not a replacement for a doctor. Its purpose is to demonstrate that transparent, no-laboratory cardiovascular risk screening is technically feasible and to contribute a reproducible framework to the responsible AI in healthcare literature.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Disclaimer -->
+    <div class="d-flex align-items-start gap-3 rounded-3 p-4" style="background: #fff8ed; border: 1px solid rgba(245,127,23,0.3);">
+      <div class="d-flex align-items-center justify-content-center rounded-3 flex-shrink-0" style="width:40px; height:40px; background:#fff4e0;">
+        <i class="bi bi-exclamation-triangle" style="color: var(--cx-amber);"></i>
+      </div>
+      <div>
+        <p class="small fw-bold mb-1">Important Disclaimer</p>
+        <p class="small text-secondary mb-0">CardioXAI is a research prototype and does not constitute medical advice. Risk scores are statistical estimates derived from population-level data and may not reflect your individual clinical status. Always consult a qualified healthcare professional before making any decisions about your health.</p>
+      </div>
+    </div>
+
+    <!-- CTA -->
+    <div class="text-center py-3">
+      <p class="small text-secondary mb-3">Ready to see your estimated risk?</p>
+      <a href="{% url 'assess' %}" class="btn btn-cx-primary btn-lg px-5 py-3 shadow" style="box-shadow: 0 8px 24px rgba(26,115,232,0.25) !important;">Start Your Assessment →</a>
+    </div>
+  </div>
+</div>
+{% endblock %}

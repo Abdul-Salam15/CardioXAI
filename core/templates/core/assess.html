@@ -1,0 +1,481 @@
+{% extends "core/base.html" %}
+{% block title %}Risk Assessment — CardioXAI{% endblock %}
+
+{% block extra_css %}
+<style>
+  .step-section { display: none; }
+  .step-section.active { display: block; }
+  .toggle-btn {
+    padding: 0.5rem 1.25rem;
+    border-radius: 0.75rem;
+    font-size: 0.875rem;
+    font-weight: 700;
+    border: 2px solid #e5e7eb;
+    background: #fff;
+    color: #6b7280;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .toggle-btn.active {
+    background: var(--cx-blue);
+    border-color: var(--cx-blue);
+    color: #fff;
+  }
+  .toggle-card {
+    border: 1px solid #e5e7eb;
+    border-radius: 0.75rem;
+    padding: 1rem;
+    transition: all 0.15s;
+  }
+  .toggle-card.error {
+    border-color: var(--cx-red);
+    background: #fef5f5;
+  }
+  .tooltip-icon {
+    position: relative;
+    cursor: help;
+    display: inline-flex;
+  }
+  .tooltip-icon .tooltip-text {
+    visibility: hidden;
+    opacity: 0;
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    margin-bottom: 8px;
+    width: 240px;
+    background: #111827;
+    color: #fff;
+    font-size: 0.75rem;
+    font-weight: 400;
+    padding: 8px 12px;
+    border-radius: 8px;
+    line-height: 1.4;
+    z-index: 20;
+    transition: opacity 0.15s;
+  }
+  .tooltip-icon:hover .tooltip-text {
+    visibility: visible;
+    opacity: 1;
+  }
+  .field-error {
+    color: var(--cx-red);
+    font-size: 0.75rem;
+    font-weight: 600;
+    margin-top: 4px;
+    display: none;
+  }
+  .field-error.show { display: block; }
+  .form-select.is-invalid, .form-control.is-invalid {
+    border-color: var(--cx-red) !important;
+  }
+  .progress-step {
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #9ca3af;
+  }
+  .progress-step.active { color: var(--cx-blue); }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-4 py-md-5" style="max-width: 42rem;">
+
+  <!-- Progress header -->
+  <div class="mb-4 sticky-top bg-white py-3" style="z-index: 30; border-bottom: 1px solid #f3f4f6;">
+    <div class="d-flex justify-content-between align-items-center mb-2">
+      <h1 class="h4 section-title mb-0">Risk Assessment</h1>
+      <span class="small fw-bold text-secondary">Step <span id="stepNum">1</span> of 3</span>
+    </div>
+    <div class="progress" style="height: 8px; border-radius: 999px;">
+      <div class="progress-bar" id="progressBar" role="progressbar" style="width: 33%; background: var(--cx-blue); transition: width 0.4s;"></div>
+    </div>
+    <div class="row g-2 mt-2">
+      <div class="col-4"><span class="progress-step active" id="label1">1 · Demographics</span></div>
+      <div class="col-4 text-center"><span class="progress-step" id="label2">2 · Medical History</span></div>
+      <div class="col-4 text-end"><span class="progress-step" id="label3">3 · Lifestyle</span></div>
+    </div>
+  </div>
+
+  <form method="POST" action="{% url 'results' %}" id="assessForm" novalidate>
+    {% csrf_token %}
+    <div class="card-cx shadow-sm p-4">
+
+      <!-- STEP 1: Demographics -->
+      <div class="step-section active" id="step1">
+        <h5 class="fw-bold mb-4">Demographics &amp; Physical</h5>
+
+        <div class="mb-4">
+          <div class="d-flex align-items-center gap-1 mb-2">
+            <label class="form-label small fw-bold mb-0">Age range</label>
+            <span class="tooltip-icon">
+              <i class="bi bi-question-circle text-secondary small"></i>
+              <span class="tooltip-text">Select the age group that applies to you.</span>
+            </span>
+          </div>
+          <select name="age" id="fAge" class="form-select" required>
+            <option value="">Select age range…</option>
+            <option>18-24</option><option>25-29</option><option>30-34</option><option>35-39</option>
+            <option>40-44</option><option>45-49</option><option>50-54</option><option>55-59</option>
+            <option>60-64</option><option>65-69</option><option>70-74</option><option>75-79</option><option>80+</option>
+          </select>
+          <div class="field-error" id="errAge">Please select your age range.</div>
+        </div>
+
+        <div class="mb-4">
+          <div class="d-flex align-items-center gap-1 mb-2">
+            <label class="form-label small fw-bold mb-0">Sex</label>
+            <span class="tooltip-icon">
+              <i class="bi bi-question-circle text-secondary small"></i>
+              <span class="tooltip-text">Select the biological sex assigned at birth, as this affects cardiovascular risk calculations.</span>
+            </span>
+          </div>
+          <input type="hidden" name="sex" id="fSex" value="">
+          <div class="d-flex gap-2">
+            <button type="button" class="toggle-btn flex-grow-1" data-field="sex" data-value="Male">Male</button>
+            <button type="button" class="toggle-btn flex-grow-1" data-field="sex" data-value="Female">Female</button>
+          </div>
+          <div class="field-error" id="errSex">Please select your sex.</div>
+        </div>
+
+        <div class="mb-4">
+          <div class="d-flex align-items-center gap-1 mb-2">
+            <label class="form-label small fw-bold mb-0">BMI (Body Mass Index)</label>
+            <span class="tooltip-icon">
+              <i class="bi bi-question-circle text-secondary small"></i>
+              <span class="tooltip-text">BMI = weight (kg) ÷ height (m)². E.g. 70 kg ÷ (1.75 × 1.75) = 22.9. Use an online BMI calculator if unsure.</span>
+            </span>
+          </div>
+          <input type="number" name="bmi" id="fBmi" class="form-control" step="0.1" placeholder="e.g. 24.5" required>
+          <div class="field-error" id="errBmi">Please enter a valid BMI between 10 and 70.</div>
+          <p class="text-muted mt-1" style="font-size: 0.75rem;" id="bmiHint">Enter a value between 10 and 70.</p>
+        </div>
+
+        <div class="mb-3">
+          <div class="d-flex align-items-center gap-1 mb-2">
+            <label class="form-label small fw-bold mb-0">General Health</label>
+            <span class="tooltip-icon">
+              <i class="bi bi-question-circle text-secondary small"></i>
+              <span class="tooltip-text">Rate your overall health as you would describe it — from Excellent to Poor.</span>
+            </span>
+          </div>
+          <select name="genHealth" id="fHealth" class="form-select" required>
+            <option value="">Select…</option>
+            <option>Excellent</option><option>Very Good</option><option>Good</option><option>Fair</option><option>Poor</option>
+          </select>
+          <div class="field-error" id="errHealth">Please rate your general health.</div>
+        </div>
+      </div>
+
+      <!-- STEP 2: Medical History -->
+      <div class="step-section" id="step2">
+        <h5 class="fw-bold mb-4">Medical History</h5>
+        <div class="d-flex flex-column gap-3" id="medFields">
+          <div class="toggle-card" data-name="highBP">
+            <div class="d-flex align-items-center justify-content-between">
+              <div class="d-flex align-items-center gap-1">
+                <span class="small fw-bold">High Blood Pressure</span>
+                <span class="tooltip-icon"><i class="bi bi-question-circle text-secondary small"></i><span class="tooltip-text">Select Yes if a doctor has ever told you that you have high blood pressure or hypertension.</span></span>
+              </div>
+              <div class="d-flex gap-2">
+                <button type="button" class="toggle-btn" data-field="highBP" data-value="0">No</button>
+                <button type="button" class="toggle-btn" data-field="highBP" data-value="1">Yes</button>
+              </div>
+            </div>
+            <input type="hidden" name="highBP" id="fhighBP" value="">
+            <div class="field-error">Please choose Yes or No.</div>
+          </div>
+          <div class="toggle-card" data-name="highChol">
+            <div class="d-flex align-items-center justify-content-between">
+              <div class="d-flex align-items-center gap-1">
+                <span class="small fw-bold">High Cholesterol</span>
+                <span class="tooltip-icon"><i class="bi bi-question-circle text-secondary small"></i><span class="tooltip-text">Select Yes if a doctor has ever told you that you have high cholesterol.</span></span>
+              </div>
+              <div class="d-flex gap-2">
+                <button type="button" class="toggle-btn" data-field="highChol" data-value="0">No</button>
+                <button type="button" class="toggle-btn" data-field="highChol" data-value="1">Yes</button>
+              </div>
+            </div>
+            <input type="hidden" name="highChol" id="fhighChol" value="">
+            <div class="field-error">Please choose Yes or No.</div>
+          </div>
+          <div class="toggle-card" data-name="diabetes">
+            <div class="d-flex align-items-center justify-content-between">
+              <div class="d-flex align-items-center gap-1">
+                <span class="small fw-bold">Diabetes</span>
+                <span class="tooltip-icon"><i class="bi bi-question-circle text-secondary small"></i><span class="tooltip-text">Select Yes if you have been diagnosed with Type 1 or Type 2 diabetes.</span></span>
+              </div>
+              <div class="d-flex gap-2">
+                <button type="button" class="toggle-btn" data-field="diabetes" data-value="0">No</button>
+                <button type="button" class="toggle-btn" data-field="diabetes" data-value="1">Yes</button>
+              </div>
+            </div>
+            <input type="hidden" name="diabetes" id="fdiabetes" value="">
+            <div class="field-error">Please choose Yes or No.</div>
+          </div>
+          <div class="toggle-card" data-name="stroke">
+            <div class="d-flex align-items-center justify-content-between">
+              <div class="d-flex align-items-center gap-1">
+                <span class="small fw-bold">History of Stroke</span>
+                <span class="tooltip-icon"><i class="bi bi-question-circle text-secondary small"></i><span class="tooltip-text">Select Yes if you have ever been told by a doctor that you had a stroke.</span></span>
+              </div>
+              <div class="d-flex gap-2">
+                <button type="button" class="toggle-btn" data-field="stroke" data-value="0">No</button>
+                <button type="button" class="toggle-btn" data-field="stroke" data-value="1">Yes</button>
+              </div>
+            </div>
+            <input type="hidden" name="stroke" id="fstroke" value="">
+            <div class="field-error">Please choose Yes or No.</div>
+          </div>
+          <div class="toggle-card" data-name="diffWalk">
+            <div class="d-flex align-items-center justify-content-between">
+              <div class="d-flex align-items-center gap-1">
+                <span class="small fw-bold">Difficulty Walking</span>
+                <span class="tooltip-icon"><i class="bi bi-question-circle text-secondary small"></i><span class="tooltip-text">Select Yes if you have serious difficulty walking or climbing stairs.</span></span>
+              </div>
+              <div class="d-flex gap-2">
+                <button type="button" class="toggle-btn" data-field="diffWalk" data-value="0">No</button>
+                <button type="button" class="toggle-btn" data-field="diffWalk" data-value="1">Yes</button>
+              </div>
+            </div>
+            <input type="hidden" name="diffWalk" id="fdiffWalk" value="">
+            <div class="field-error">Please choose Yes or No.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- STEP 3: Lifestyle -->
+      <div class="step-section" id="step3">
+        <h5 class="fw-bold mb-4">Lifestyle &amp; Symptoms</h5>
+        <div class="d-flex flex-column gap-3" id="lifeFields">
+          <div class="toggle-card" data-name="smoker">
+            <div class="d-flex align-items-center justify-content-between">
+              <div class="d-flex align-items-center gap-1">
+                <span class="small fw-bold">Smoker</span>
+                <span class="tooltip-icon"><i class="bi bi-question-circle text-secondary small"></i><span class="tooltip-text">Select Yes if you have smoked at least 100 cigarettes in your lifetime.</span></span>
+              </div>
+              <div class="d-flex gap-2">
+                <button type="button" class="toggle-btn" data-field="smoker" data-value="0">No</button>
+                <button type="button" class="toggle-btn" data-field="smoker" data-value="1">Yes</button>
+              </div>
+            </div>
+            <input type="hidden" name="smoker" id="fsmoker" value="">
+            <div class="field-error">Please choose Yes or No.</div>
+          </div>
+          <div class="toggle-card" data-name="heavyAlcohol">
+            <div class="d-flex align-items-center justify-content-between">
+              <div class="d-flex align-items-center gap-1">
+                <span class="small fw-bold">Heavy Alcohol Use</span>
+                <span class="tooltip-icon"><i class="bi bi-question-circle text-secondary small"></i><span class="tooltip-text">Select Yes if you are male and drink more than 14 drinks per week, or female and drink more than 7 drinks per week.</span></span>
+              </div>
+              <div class="d-flex gap-2">
+                <button type="button" class="toggle-btn" data-field="heavyAlcohol" data-value="0">No</button>
+                <button type="button" class="toggle-btn" data-field="heavyAlcohol" data-value="1">Yes</button>
+              </div>
+            </div>
+            <input type="hidden" name="heavyAlcohol" id="fheavyAlcohol" value="">
+            <div class="field-error">Please choose Yes or No.</div>
+          </div>
+          <div class="toggle-card" data-name="physAct">
+            <div class="d-flex align-items-center justify-content-between">
+              <div class="d-flex align-items-center gap-1">
+                <span class="small fw-bold">Regular Physical Activity</span>
+                <span class="tooltip-icon"><i class="bi bi-question-circle text-secondary small"></i><span class="tooltip-text">Select Yes if you did any physical activity or exercise in the past 30 days outside of your regular job.</span></span>
+              </div>
+              <div class="d-flex gap-2">
+                <button type="button" class="toggle-btn" data-field="physAct" data-value="0">No</button>
+                <button type="button" class="toggle-btn" data-field="physAct" data-value="1">Yes</button>
+              </div>
+            </div>
+            <input type="hidden" name="physAct" id="fphysAct" value="">
+            <div class="field-error">Please choose Yes or No.</div>
+          </div>
+          <div class="toggle-card" data-name="fruits">
+            <div class="d-flex align-items-center justify-content-between">
+              <div class="d-flex align-items-center gap-1">
+                <span class="small fw-bold">Eats Fruit Daily</span>
+                <span class="tooltip-icon"><i class="bi bi-question-circle text-secondary small"></i><span class="tooltip-text">Select Yes if you consume fruit one or more times per day on most days.</span></span>
+              </div>
+              <div class="d-flex gap-2">
+                <button type="button" class="toggle-btn" data-field="fruits" data-value="0">No</button>
+                <button type="button" class="toggle-btn" data-field="fruits" data-value="1">Yes</button>
+              </div>
+            </div>
+            <input type="hidden" name="fruits" id="ffruits" value="">
+            <div class="field-error">Please choose Yes or No.</div>
+          </div>
+          <div class="toggle-card" data-name="veggies">
+            <div class="d-flex align-items-center justify-content-between">
+              <div class="d-flex align-items-center gap-1">
+                <span class="small fw-bold">Eats Vegetables Daily</span>
+                <span class="tooltip-icon"><i class="bi bi-question-circle text-secondary small"></i><span class="tooltip-text">Select Yes if you consume vegetables one or more times per day on most days.</span></span>
+              </div>
+              <div class="d-flex gap-2">
+                <button type="button" class="toggle-btn" data-field="veggies" data-value="0">No</button>
+                <button type="button" class="toggle-btn" data-field="veggies" data-value="1">Yes</button>
+              </div>
+            </div>
+            <input type="hidden" name="veggies" id="fveggies" value="">
+            <div class="field-error">Please choose Yes or No.</div>
+          </div>
+          <div class="toggle-card" data-name="chestPain">
+            <div class="d-flex align-items-center justify-content-between">
+              <div class="d-flex align-items-center gap-1">
+                <span class="small fw-bold">Chest Pain / Angina</span>
+                <span class="tooltip-icon"><i class="bi bi-question-circle text-secondary small"></i><span class="tooltip-text">Select Yes if you have experienced chest pain, pressure, or tightness — especially during physical activity.</span></span>
+              </div>
+              <div class="d-flex gap-2">
+                <button type="button" class="toggle-btn" data-field="chestPain" data-value="0">No</button>
+                <button type="button" class="toggle-btn" data-field="chestPain" data-value="1">Yes</button>
+              </div>
+            </div>
+            <input type="hidden" name="chestPain" id="fchestPain" value="">
+            <div class="field-error">Please choose Yes or No.</div>
+          </div>
+        </div>
+
+        <div class="mt-4 d-flex flex-column gap-4">
+          <div>
+            <div class="d-flex justify-content-between align-items-center mb-1">
+              <div class="d-flex align-items-center gap-1">
+                <label class="small fw-bold mb-0">Poor Mental Health Days <span class="text-secondary fw-normal">(last 30 days)</span></label>
+                <span class="tooltip-icon"><i class="bi bi-question-circle text-secondary small"></i><span class="tooltip-text">Enter the number of days in the past 30 days when your mental health was not good. Enter 0 if none.</span></span>
+              </div>
+              <span class="small fw-bold" style="color: var(--cx-blue);" id="mentalVal">4</span>
+            </div>
+            <input type="range" name="mentalHealth" id="fMental" class="form-range" min="0" max="30" value="4" style="accent-color: var(--cx-blue);">
+          </div>
+          <div>
+            <div class="d-flex justify-content-between align-items-center mb-1">
+              <div class="d-flex align-items-center gap-1">
+                <label class="small fw-bold mb-0">Poor Physical Health Days <span class="text-secondary fw-normal">(last 30 days)</span></label>
+                <span class="tooltip-icon"><i class="bi bi-question-circle text-secondary small"></i><span class="tooltip-text">Enter the number of days in the past 30 days when your physical health was not good. Enter 0 if none.</span></span>
+              </div>
+              <span class="small fw-bold" style="color: var(--cx-blue);" id="physVal">6</span>
+            </div>
+            <input type="range" name="physHealth" id="fPhys" class="form-range" min="0" max="30" value="6" style="accent-color: var(--cx-blue);">
+          </div>
+          <div>
+            <div class="d-flex justify-content-between align-items-center mb-1">
+              <div class="d-flex align-items-center gap-1">
+                <label class="small fw-bold mb-0">Average Sleep</label>
+                <span class="tooltip-icon"><i class="bi bi-question-circle text-secondary small"></i><span class="tooltip-text">Enter the average number of hours you sleep per night. Most adults need 7–9 hours.</span></span>
+              </div>
+              <span class="small fw-bold" style="color: var(--cx-blue);"><span id="sleepVal">7</span> hrs</span>
+            </div>
+            <input type="range" name="sleep" id="fSleep" class="form-range" min="1" max="14" value="7" style="accent-color: var(--cx-blue);">
+          </div>
+        </div>
+      </div>
+
+      <!-- NAV BUTTONS -->
+      <div class="d-flex justify-content-between align-items-center gap-3 mt-4 pt-4" style="border-top: 1px solid #f3f4f6;">
+        <button type="button" class="btn btn-cx-outline px-4 py-2" id="btnBack">← Back</button>
+        <button type="button" class="btn btn-cx-primary px-4 py-2" id="btnNext">Next →</button>
+        <button type="submit" class="btn btn-cx-green px-4 py-2 shadow" id="btnAnalyse" style="display:none; box-shadow: 0 8px 24px rgba(46,125,50,0.25) !important;">Analyse My Risk →</button>
+      </div>
+    </div>
+  </form>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+(function() {
+  let step = 1;
+  const form = document.getElementById('assessForm');
+  const steps = [null, document.getElementById('step1'), document.getElementById('step2'), document.getElementById('step3')];
+
+  function showStep(n) {
+    step = n;
+    steps.forEach((s, i) => { if (s) s.classList.toggle('active', i === n); });
+    document.getElementById('stepNum').textContent = n;
+    document.getElementById('progressBar').style.width = Math.round(n / 3 * 100) + '%';
+    ['label1','label2','label3'].forEach((id, i) => {
+      document.getElementById(id).classList.toggle('active', i + 1 <= n);
+    });
+    document.getElementById('btnBack').style.display = n === 1 ? 'none' : '';
+    document.getElementById('btnNext').style.display = n === 3 ? 'none' : '';
+    document.getElementById('btnAnalyse').style.display = n === 3 ? '' : 'none';
+    window.scrollTo(0, 0);
+  }
+
+  function clearErrors() {
+    document.querySelectorAll('.field-error').forEach(e => e.classList.remove('show'));
+    document.querySelectorAll('.form-select, .form-control').forEach(e => e.classList.remove('is-invalid'));
+    document.querySelectorAll('.toggle-card').forEach(e => e.classList.remove('error'));
+  }
+
+  function validateStep(n) {
+    clearErrors();
+    let valid = true;
+    if (n === 1) {
+      if (!document.getElementById('fAge').value) { showError('errAge', 'fAge'); valid = false; }
+      if (!document.getElementById('fSex').value) { showError('errSex'); valid = false; }
+      const bmi = parseFloat(document.getElementById('fBmi').value);
+      if (!document.getElementById('fBmi').value || isNaN(bmi) || bmi < 10 || bmi > 70) { showError('errBmi', 'fBmi'); valid = false; }
+      if (!document.getElementById('fHealth').value) { showError('errHealth', 'fHealth'); valid = false; }
+    } else if (n === 2) {
+      ['highBP','highChol','diabetes','stroke','diffWalk'].forEach(f => {
+        if (document.getElementById('f' + f).value === '') {
+          const card = document.querySelector('.toggle-card[data-name="' + f + '"]');
+          card.classList.add('error');
+          card.querySelector('.field-error').classList.add('show');
+          valid = false;
+        }
+      });
+    } else if (n === 3) {
+      ['smoker','heavyAlcohol','physAct','fruits','veggies','chestPain'].forEach(f => {
+        if (document.getElementById('f' + f).value === '') {
+          const card = document.querySelector('.toggle-card[data-name="' + f + '"]');
+          card.classList.add('error');
+          card.querySelector('.field-error').classList.add('show');
+          valid = false;
+        }
+      });
+    }
+    return valid;
+  }
+
+  function showError(errId, fieldId) {
+    document.getElementById(errId).classList.add('show');
+    if (fieldId) document.getElementById(fieldId).classList.add('is-invalid');
+  }
+
+  document.getElementById('btnNext').addEventListener('click', () => {
+    if (validateStep(step)) showStep(step + 1);
+  });
+  document.getElementById('btnBack').addEventListener('click', () => {
+    clearErrors();
+    showStep(step - 1);
+  });
+  form.addEventListener('submit', (e) => {
+    if (!validateStep(3)) { e.preventDefault(); return; }
+  });
+
+  // Toggle buttons for sex and yes/no fields
+  document.querySelectorAll('.toggle-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const field = btn.dataset.field;
+      const value = btn.dataset.value;
+      const hidden = document.getElementById('f' + field);
+      if (hidden) hidden.value = value;
+      btn.parentElement.querySelectorAll('.toggle-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const card = btn.closest('.toggle-card');
+      if (card) { card.classList.remove('error'); card.querySelector('.field-error').classList.remove('show'); }
+    });
+  });
+
+  // Sliders
+  document.getElementById('fMental').addEventListener('input', e => { document.getElementById('mentalVal').textContent = e.target.value; });
+  document.getElementById('fPhys').addEventListener('input', e => { document.getElementById('physVal').textContent = e.target.value; });
+  document.getElementById('fSleep').addEventListener('input', e => { document.getElementById('sleepVal').textContent = e.target.value; });
+
+  showStep(1);
+})();
+</script>
+{% endblock %}

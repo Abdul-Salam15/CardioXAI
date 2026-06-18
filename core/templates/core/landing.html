@@ -1,0 +1,139 @@
+{% extends "core/base.html" %}
+{% block title %}CardioXAI — Know Your Heart Risk{% endblock %}
+
+{% block content %}
+<!-- HERO -->
+<section style="background: linear-gradient(to bottom, #eef4fe, #ffffff);">
+  <div class="container py-5">
+    <div class="row align-items-center g-5 py-md-5">
+      <div class="col-md-6">
+        <div class="d-inline-flex align-items-center gap-2 border rounded-pill px-3 py-1 mb-4" style="border-color: rgba(26,115,232,0.2) !important; color: var(--cx-blue); font-size: 0.75rem; font-weight: 700;">
+          <span class="rounded-circle d-inline-block" style="width:6px; height:6px; background: var(--cx-green);"></span>
+          EXPLAINABLE AI &middot; CORONARY HEART DISEASE
+        </div>
+        <h1 class="display-5 section-title lh-1 mb-3">Know Your Heart Risk — <span style="color: var(--cx-blue);">No Lab Tests Required</span></h1>
+        <p class="lead text-secondary mb-4" style="max-width: 28rem;">CardioXAI uses your self-reported lifestyle and health data with an explainable AI model to estimate your coronary heart disease risk — and tells you <em>why</em>.</p>
+        <div class="d-flex flex-wrap gap-2 mb-3">
+          <a href="{% url 'assess' %}" class="btn btn-cx-primary btn-lg px-4 py-3 shadow" style="box-shadow: 0 8px 24px rgba(26,115,232,0.25) !important;">Start Assessment →</a>
+          <a href="{% url 'demo' %}" class="btn btn-cx-outline btn-lg px-4 py-3">View Sample Report</a>
+        </div>
+        <p class="text-muted small fw-medium">⏱ Takes about 2 minutes · No account needed</p>
+      </div>
+      <div class="col-md-6">
+        <div class="card-cx shadow p-4">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <span class="small fw-bold text-secondary">CHD Risk Score</span>
+            <span class="badge rounded-pill fw-bold" style="background: #fff4e0; color: var(--cx-amber);">SAMPLE</span>
+          </div>
+          <div class="d-flex align-items-end gap-3 mb-3">
+            <div style="font-size: 3.5rem; font-weight: 900; color: var(--cx-amber); line-height: 1;">47<span style="font-size: 1.5rem;">%</span></div>
+            <div class="flex-grow-1 pb-2">
+              <div class="rounded-pill overflow-hidden" style="height: 10px; background: #f3f4f6;">
+                <div style="width: 47%; height: 100%; background: linear-gradient(to right, var(--cx-green), var(--cx-amber), var(--cx-red));"></div>
+              </div>
+              <div class="d-flex justify-content-between mt-1" style="font-size: 10px; color: #9ca3af; font-weight: 600;">
+                <span>Low</span><span>Moderate</span><span>High</span>
+              </div>
+            </div>
+          </div>
+          <div class="d-flex flex-column gap-2">
+            <div class="d-flex align-items-center gap-2 small">
+              <span style="width:8px; height:8px; border-radius:2px; background: var(--cx-red);"></span>
+              <span class="text-secondary flex-grow-1">High blood pressure</span>
+              <span class="fw-bold" style="color: var(--cx-red);">+ risk</span>
+            </div>
+            <div class="d-flex align-items-center gap-2 small">
+              <span style="width:8px; height:8px; border-radius:2px; background: var(--cx-red);"></span>
+              <span class="text-secondary flex-grow-1">BMI 28.4 (overweight)</span>
+              <span class="fw-bold" style="color: var(--cx-red);">+ risk</span>
+            </div>
+            <div class="d-flex align-items-center gap-2 small">
+              <span style="width:8px; height:8px; border-radius:2px; background: var(--cx-blue);"></span>
+              <span class="text-secondary flex-grow-1">Eats vegetables daily</span>
+              <span class="fw-bold" style="color: var(--cx-blue);">− risk</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURE CARDS -->
+<section class="container py-5">
+  <div class="row g-4">
+    <div class="col-md-4">
+      <div class="card-cx p-4 h-100" style="transition: box-shadow 0.2s;">
+        <div class="d-flex align-items-center justify-content-center rounded-3 mb-4" style="width:48px; height:48px; background:#eef4fe;">
+          <i class="bi bi-check2-square fs-4" style="color: var(--cx-blue);"></i>
+        </div>
+        <h5 class="fw-bold mb-2">No Laboratory Tests</h5>
+        <p class="small text-secondary mb-0">Get a risk estimate from lifestyle and history answers alone — no blood draws, no clinic visit required.</p>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card-cx p-4 h-100">
+        <div class="d-flex align-items-center justify-content-center rounded-3 mb-4" style="width:48px; height:48px; background:#eafbe7;">
+          <i class="bi bi-cpu fs-4" style="color: var(--cx-green);"></i>
+        </div>
+        <h5 class="fw-bold mb-2">AI-Powered Explanations</h5>
+        <p class="small text-secondary mb-0">Every score comes with transparent SHAP and LIME explanations showing exactly which factors drove your result.</p>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card-cx p-4 h-100">
+        <div class="d-flex align-items-center justify-content-center rounded-3 mb-4" style="width:48px; height:48px; background:#fff4e0;">
+          <i class="bi bi-person-plus fs-4" style="color: var(--cx-amber);"></i>
+        </div>
+        <h5 class="fw-bold mb-2">Personalised Recommendations</h5>
+        <p class="small text-secondary mb-0">Receive concrete, prioritised lifestyle actions tailored to the factors raising your individual risk.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section style="background: #f8fafc; border-top: 1px solid #e5e7eb; border-bottom: 1px solid #e5e7eb;">
+  <div class="container py-5">
+    <h2 class="text-center section-title mb-2">How It Works</h2>
+    <p class="text-center text-secondary mb-5 mx-auto" style="max-width: 28rem;">Three simple steps from questionnaire to an explainable risk report.</p>
+    <div class="row g-4">
+      <div class="col-md-4">
+        <div class="card-cx p-4 h-100">
+          <div class="d-flex align-items-center justify-content-center rounded-circle mb-4 text-white fw-bold" style="width:40px; height:40px; background: var(--cx-blue);">1</div>
+          <h5 class="fw-bold mb-2">Fill in the form</h5>
+          <p class="small text-secondary mb-0">Answer a short guided questionnaire about your demographics, medical history, and lifestyle.</p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card-cx p-4 h-100">
+          <div class="d-flex align-items-center justify-content-center rounded-circle mb-4 text-white fw-bold" style="width:40px; height:40px; background: var(--cx-green);">2</div>
+          <h5 class="fw-bold mb-2">AI analyses your data</h5>
+          <p class="small text-secondary mb-0">Our explainable model weighs your inputs against established cardiovascular risk patterns.</p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card-cx p-4 h-100">
+          <div class="d-flex align-items-center justify-content-center rounded-circle mb-4 text-white fw-bold" style="width:40px; height:40px; background: var(--cx-amber);">3</div>
+          <h5 class="fw-bold mb-2">Receive your risk report</h5>
+          <p class="small text-secondary mb-0">See your score, the factors behind it, and personalised actions you can take next.</p>
+        </div>
+      </div>
+    </div>
+    <div class="text-center mt-5">
+      <a href="{% url 'assess' %}" class="btn btn-cx-primary btn-lg px-5 py-3 shadow" style="box-shadow: 0 8px 24px rgba(26,115,232,0.25) !important;">Start Your Assessment</a>
+    </div>
+  </div>
+</section>
+
+<!-- DISCLAIMER -->
+<section class="container py-5">
+  <div class="d-flex align-items-start gap-3 rounded-3 p-4" style="background: #fff4e0; border: 1px solid rgba(245,127,23,0.3);">
+    <i class="bi bi-exclamation-triangle fs-5 flex-shrink-0 mt-1" style="color: var(--cx-amber);"></i>
+    <p class="small fw-medium text-secondary mb-0">
+      <span class="fw-bold text-dark">Disclaimer.</span>
+      CardioXAI is a research tool and does not constitute medical advice. Always consult a qualified healthcare professional regarding your health.
+    </p>
+  </div>
+</section>
+{% endblock %}
