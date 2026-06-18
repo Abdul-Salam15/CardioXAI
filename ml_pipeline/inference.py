@@ -78,6 +78,8 @@ def predict(form_data):
     probas = {}
     preds = {}
     for name in ['lr', 'rf', 'xgb']:
+        if name not in _cache:
+            continue
         model = _cache[name]
         p = model.predict_proba(X)[0, 1]
         probas[name] = float(round(p, 4))
