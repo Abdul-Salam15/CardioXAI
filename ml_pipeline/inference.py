@@ -48,14 +48,18 @@ def _load():
     with open(os.path.join(MODELS_DIR, 'metrics.json')) as f:
         _cache['metrics'] = json.load(f)
 
-    splits = joblib.load(os.path.join(MODELS_DIR, 'splits.joblib'))
-    _cache['X_train'] = splits['X_train']
+    bg_path = os.path.join(MODELS_DIR, 'bg_sample.joblib')
+    if os.path.exists(bg_path):
+        bg_data = joblib.load(bg_path)
+    else:
+        splits = joblib.load(os.path.join(MODELS_DIR, 'splits.joblib'))
+        bg_data = splits['X_train'].values[:5000]
 
-    _cache['lr_explainer'] = shap.LinearExplainer(_cache['lr'], splits['X_train'].values[:2000])
+    _cache['lr_explainer'] = shap.LinearExplainer(_cache['lr'], bg_data[:2000])
     _cache['xgb_explainer'] = shap.TreeExplainer(_cache['xgb'])
 
     _cache['lime_explainer'] = LimeTabularExplainer(
-        splits['X_train'].values[:5000],
+        bg_data,
         feature_names=_cache['feature_names'],
         class_names=['No CHD', 'CHD'],
         mode='classification',
