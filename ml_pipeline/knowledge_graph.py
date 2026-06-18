@@ -218,16 +218,17 @@ def generate_pyvis_html(G, output_path=None):
             shape=shape,
         )
 
-    min_edge_weight = 0.6
     for src, tgt, data in G.edges(data=True):
         w = data.get('weight', 0.5)
-        if w < min_edge_weight:
-            continue
+        opacity = 0.3 if w < 0.6 else 0.6 if w < 0.8 else 0.9
+        r, g, b = 209, 213, 219
+        color = f"rgba({r},{g},{b},{opacity})"
         net.add_edge(
             src, tgt,
             title=data.get('description', ''),
             width=w * 2.5,
             value=w,
+            color=color,
         )
 
     net.save_graph(output_path)
