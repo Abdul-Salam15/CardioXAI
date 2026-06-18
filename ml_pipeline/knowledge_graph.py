@@ -176,26 +176,25 @@ def generate_pyvis_html(G, output_path=None):
 
     net.set_options(json.dumps({
         "nodes": {
-            "font": {"size": 14, "face": "Public Sans, system-ui, sans-serif", "strokeWidth": 3, "strokeColor": "#ffffff"},
+            "font": {"size": 13, "face": "Public Sans, system-ui, sans-serif", "strokeWidth": 3, "strokeColor": "#ffffff"},
             "borderWidth": 2,
             "borderWidthSelected": 3,
             "shadow": {"enabled": True, "size": 8, "color": "rgba(0,0,0,0.1)"},
         },
         "edges": {
-            "color": {"color": "#cbd5e1", "highlight": "#1A73E8"},
+            "color": {"color": "#d1d5db", "highlight": "#1A73E8"},
             "smooth": {"type": "continuous"},
-            "font": {"size": 9, "face": "Public Sans, system-ui, sans-serif", "color": "#9ca3af", "strokeWidth": 0, "align": "middle"},
         },
         "physics": {
             "forceAtlas2Based": {
-                "gravitationalConstant": -50,
-                "centralGravity": 0.01,
-                "springLength": 150,
-                "springConstant": 0.08,
-                "damping": 0.5,
+                "gravitationalConstant": -160,
+                "centralGravity": 0.008,
+                "springLength": 280,
+                "springConstant": 0.04,
+                "damping": 0.6,
             },
             "solver": "forceAtlas2Based",
-            "stabilization": {"iterations": 150},
+            "stabilization": {"iterations": 200},
         },
         "interaction": {
             "hover": True,
@@ -207,7 +206,7 @@ def generate_pyvis_html(G, output_path=None):
 
     for node_id, data in G.nodes(data=True):
         color = CATEGORY_COLORS.get(data.get('category', ''), '#6b7280')
-        size = 15 + degree_cent.get(node_id, 0) * 40
+        size = 18 + degree_cent.get(node_id, 0) * 35
         shape = 'dot' if data.get('modifiable', True) else 'diamond'
         title = f"<b>{data['label']}</b><br>{data['description']}<br><i>{'Modifiable' if data.get('modifiable') else 'Non-modifiable'}</i>"
         net.add_node(
@@ -219,12 +218,15 @@ def generate_pyvis_html(G, output_path=None):
             shape=shape,
         )
 
+    min_edge_weight = 0.6
     for src, tgt, data in G.edges(data=True):
         w = data.get('weight', 0.5)
+        if w < min_edge_weight:
+            continue
         net.add_edge(
             src, tgt,
             title=data.get('description', ''),
-            width=w * 3,
+            width=w * 2.5,
             value=w,
         )
 
