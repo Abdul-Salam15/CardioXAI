@@ -219,8 +219,13 @@ def _compute_lime(X):
     feature_names = _cache['feature_names']
     result = []
     for feat_idx, weight in exp.as_list():
+        desc = feat_idx
+        for internal, display in FEATURE_DISPLAY.items():
+            if internal in desc:
+                desc = desc.replace(internal, display)
+                break
         result.append({
-            'feature_desc': feat_idx,
+            'feature_desc': desc,
             'weight': round(weight, 4),
             'direction': 'risk' if weight > 0 else 'protective',
         })

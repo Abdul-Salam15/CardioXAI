@@ -53,8 +53,8 @@ def results(request):
 
     return render(request, 'core/results.html', {
         'prediction': prediction,
-        'prediction_json': json.dumps(prediction),
-        'graph_data_json': json.dumps(graph_data),
+        'prediction_json': prediction,
+        'graph_data_json': graph_data,
     })
 
 
