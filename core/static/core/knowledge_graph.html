@@ -100,7 +100,7 @@
                   // adding nodes and edges to the graph
                   data = {nodes: nodes, edges: edges};
 
-                  var options = {"nodes": {"font": {"size": 18, "face": "PublicSans,system-ui,sans-serif", "strokeWidth": 3, "strokeColor": "#ffffff", "bold": {"size": 20}}, "borderWidth": 2, "borderWidthSelected": 3, "shadow": {"enabled": true, "size": 8, "color": "rgba(0,0,0,0.1)"}}, "edges": {"color": {"color": "#d1d5db", "highlight": "#1A73E8"}, "smooth": {"type": "continuous"}}, "physics": {"forceAtlas2Based": {"gravitationalConstant": -200, "centralGravity": 0.005, "springLength": 320, "springConstant": 0.035, "damping": 0.6}, "solver": "forceAtlas2Based", "stabilization": {"iterations": 200}}, "interaction": {"hover": true, "tooltipDelay": 100, "zoomView": true}};
+                  var options = {"nodes": {"font": {"size": 18, "face": "PublicSans,system-ui,sans-serif", "strokeWidth": 3, "strokeColor": "#ffffff", "bold": {"size": 20}}, "borderWidth": 2, "borderWidthSelected": 3, "shadow": {"enabled": true, "size": 8, "color": "rgba(0,0,0,0.1)"}}, "edges": {"color": {"color": "#d1d5db", "highlight": "#1A73E8", "opacity": 1.0}, "smooth": {"type": "continuous"}, "selectionWidth": 2}, "physics": {"forceAtlas2Based": {"gravitationalConstant": -200, "centralGravity": 0.005, "springLength": 320, "springConstant": 0.035, "damping": 0.6}, "solver": "forceAtlas2Based", "stabilization": {"iterations": 200}}, "interaction": {"hover": true, "tooltipDelay": 100, "zoomView": true, "selectConnectedEdges": true, "hoverConnectedEdges": true}};
 
                   
 

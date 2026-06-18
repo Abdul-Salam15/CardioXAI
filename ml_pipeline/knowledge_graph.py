@@ -182,8 +182,9 @@ def generate_pyvis_html(G, output_path=None):
             "shadow": {"enabled": True, "size": 8, "color": "rgba(0,0,0,0.1)"},
         },
         "edges": {
-            "color": {"color": "#d1d5db", "highlight": "#1A73E8"},
+            "color": {"color": "#d1d5db", "highlight": "#1A73E8", "opacity": 1.0},
             "smooth": {"type": "continuous"},
+            "selectionWidth": 2,
         },
         "physics": {
             "forceAtlas2Based": {
@@ -200,6 +201,8 @@ def generate_pyvis_html(G, output_path=None):
             "hover": True,
             "tooltipDelay": 100,
             "zoomView": True,
+            "selectConnectedEdges": True,
+            "hoverConnectedEdges": True,
         },
     }))
 
