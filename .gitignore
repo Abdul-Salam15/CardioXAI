@@ -38,6 +38,9 @@ models_store/splits.joblib
 # Node
 node_modules/
 
+# Vendor libs from design handoff (unused, CDN-served)
+lib/
+
 # Misc
 /tmp/
 *.tmp
