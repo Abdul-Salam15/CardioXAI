@@ -133,7 +133,7 @@
               <span class="tooltip-text">Select the biological sex assigned at birth, as this affects cardiovascular risk calculations.</span>
             </span>
           </div>
-          <input type="hidden" name="sex" id="fSex" value="">
+          <input type="hidden" name="sex" id="fsex" value="">
           <div class="d-flex gap-2">
             <button type="button" class="toggle-btn flex-grow-1" data-field="sex" data-value="Male">Male</button>
             <button type="button" class="toggle-btn flex-grow-1" data-field="sex" data-value="Female">Female</button>
@@ -414,7 +414,7 @@
     let valid = true;
     if (n === 1) {
       if (!document.getElementById('fAge').value) { showError('errAge', 'fAge'); valid = false; }
-      if (!document.getElementById('fSex').value) { showError('errSex'); valid = false; }
+      if (!document.getElementById('fsex').value) { showError('errSex'); valid = false; }
       const bmi = parseFloat(document.getElementById('fBmi').value);
       if (!document.getElementById('fBmi').value || isNaN(bmi) || bmi < 10 || bmi > 70) { showError('errBmi', 'fBmi'); valid = false; }
       if (!document.getElementById('fHealth').value) { showError('errHealth', 'fHealth'); valid = false; }
