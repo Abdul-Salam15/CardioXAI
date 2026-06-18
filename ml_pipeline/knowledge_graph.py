@@ -212,7 +212,8 @@ def generate_pyvis_html(G, output_path=None):
         color = CATEGORY_COLORS.get(data.get('category', ''), '#6b7280')
         size = 28 + degree_cent.get(node_id, 0) * 40
         shape = 'dot' if data.get('modifiable', True) else 'diamond'
-        title = f"<b>{data['label']}</b><br>{data['description']}<br><i>{'Modifiable' if data.get('modifiable') else 'Non-modifiable'}</i>"
+        modifiable_text = 'Modifiable' if data.get('modifiable') else 'Non-modifiable'
+        title = f"{data['label']}\n{data['description']}\n({modifiable_text})"
         net.add_node(
             node_id,
             label=data['label'],
@@ -225,14 +226,17 @@ def generate_pyvis_html(G, output_path=None):
     for src, tgt, data in G.edges(data=True):
         w = data.get('weight', 0.5)
         opacity = 0.3 if w < 0.6 else 0.6 if w < 0.8 else 0.9
-        r, g, b = 209, 213, 219
-        color = f"rgba({r},{g},{b},{opacity})"
+        edge_color = {
+            'color': f"rgba(209,213,219,{opacity})",
+            'highlight': '#1A73E8',
+            'hover': '#1A73E8',
+        }
         net.add_edge(
             src, tgt,
             title=data.get('description', ''),
             width=w * 2.5,
             value=w,
-            color=color,
+            color=edge_color,
         )
 
     net.save_graph(output_path)
