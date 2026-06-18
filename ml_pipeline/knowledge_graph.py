@@ -169,14 +169,14 @@ def generate_pyvis_html(G, output_path=None):
         output_path = os.path.join(OUTPUT_DIR, 'knowledge_graph.html')
 
     net = Network(
-        height='600px', width='100%',
+        height='700px', width='100%',
         bgcolor='#f8fafc', font_color='#1f2937',
         directed=False, notebook=False,
     )
 
     net.set_options(json.dumps({
         "nodes": {
-            "font": {"size": 13, "face": "Public Sans, system-ui, sans-serif", "strokeWidth": 3, "strokeColor": "#ffffff"},
+            "font": {"size": 18, "face": "Public Sans, system-ui, sans-serif", "strokeWidth": 3, "strokeColor": "#ffffff", "bold": {"size": 20}},
             "borderWidth": 2,
             "borderWidthSelected": 3,
             "shadow": {"enabled": True, "size": 8, "color": "rgba(0,0,0,0.1)"},
@@ -187,10 +187,10 @@ def generate_pyvis_html(G, output_path=None):
         },
         "physics": {
             "forceAtlas2Based": {
-                "gravitationalConstant": -160,
-                "centralGravity": 0.008,
-                "springLength": 280,
-                "springConstant": 0.04,
+                "gravitationalConstant": -200,
+                "centralGravity": 0.005,
+                "springLength": 320,
+                "springConstant": 0.035,
                 "damping": 0.6,
             },
             "solver": "forceAtlas2Based",
@@ -199,6 +199,7 @@ def generate_pyvis_html(G, output_path=None):
         "interaction": {
             "hover": True,
             "tooltipDelay": 100,
+            "zoomView": True,
         },
     }))
 
@@ -206,7 +207,7 @@ def generate_pyvis_html(G, output_path=None):
 
     for node_id, data in G.nodes(data=True):
         color = CATEGORY_COLORS.get(data.get('category', ''), '#6b7280')
-        size = 18 + degree_cent.get(node_id, 0) * 35
+        size = 28 + degree_cent.get(node_id, 0) * 40
         shape = 'dot' if data.get('modifiable', True) else 'diamond'
         title = f"<b>{data['label']}</b><br>{data['description']}<br><i>{'Modifiable' if data.get('modifiable') else 'Non-modifiable'}</i>"
         net.add_node(
