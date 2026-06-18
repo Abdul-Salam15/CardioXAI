@@ -1,0 +1,981 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  html, body { margin:0; }
+  body { font-family:'Public Sans', system-ui, -apple-system, sans-serif; color:#1f2937; background:#ffffff; -webkit-font-smoothing:antialiased; }
+  * { box-sizing:border-box; }
+  @keyframes cxpulse { 0%,100% { opacity:.18; transform:scale(1); } 50% { opacity:.05; transform:scale(1.12); } }
+  .cx-halo { transform-box: fill-box; transform-origin: center; animation: cxpulse 3.2s ease-in-out infinite; }
+  @keyframes cxdash { to { stroke-dashoffset: -16; } }
+  .cx-edge { stroke-dasharray: 4 4; animation: cxdash 1.2s linear infinite; }
+</style>
+</helmet>
+
+<div class="min-h-screen flex flex-col bg-white">
+
+  <!-- ===== NAVBAR ===== -->
+  <header class="sticky top-0 z-50 bg-white border-b border-gray-200">
+    <nav class="max-w-6xl mx-auto px-5 h-16 flex items-center justify-between">
+      <button onClick="{{ goHome }}" class="flex items-center gap-2 group">
+        <svg viewBox="0 0 24 24" class="w-7 h-7" fill="#B71C1C"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"></path></svg>
+        <span class="text-xl font-extrabold tracking-tight text-gray-900">Cardio<span class="text-[#1A73E8]">XAI</span></span>
+      </button>
+      <div class="hidden md:flex items-center gap-8 text-sm font-semibold text-gray-600">
+        <button onClick="{{ goHome }}" class="hover:text-[#1A73E8] transition">Home</button>
+        <button onClick="{{ goAbout }}" class="hover:text-[#1A73E8] transition">About</button>
+        <button onClick="{{ start }}" class="bg-[#1A73E8] text-white px-4 py-2 rounded-lg font-semibold hover:bg-[#1660c4] transition">Start Assessment</button>
+      </div>
+      <button onClick="{{ toggleMenu }}" class="md:hidden p-2 -mr-2 text-gray-700" aria-label="Menu">
+        <svg viewBox="0 0 24 24" class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16" stroke-linecap="round"></path></svg>
+      </button>
+    </nav>
+    <sc-if value="{{ menuOpen }}" hint-placeholder-val="{{ false }}">
+      <div class="md:hidden border-t border-gray-200 bg-white px-5 py-3 flex flex-col gap-1 text-sm font-semibold text-gray-700">
+        <button onClick="{{ goHome }}" class="text-left py-2 hover:text-[#1A73E8]">Home</button>
+        <button onClick="{{ goAbout }}" class="text-left py-2 hover:text-[#1A73E8]">About</button>
+        <button onClick="{{ start }}" class="mt-1 bg-[#1A73E8] text-white px-4 py-2.5 rounded-lg text-center">Start Assessment</button>
+      </div>
+    </sc-if>
+  </header>
+
+  <main class="flex-1">
+
+    <!-- ===== LANDING ===== -->
+    <sc-if value="{{ isLanding }}" hint-placeholder-val="{{ true }}">
+      <div>
+        <!-- HERO -->
+        <section class="bg-gradient-to-b from-[#eef4fe] to-white">
+          <div class="max-w-6xl mx-auto px-5 py-16 md:py-24 grid md:grid-cols-2 gap-12 items-center">
+            <div>
+              <div class="inline-flex items-center gap-2 bg-white border border-[#1A73E8]/20 text-[#1A73E8] text-xs font-bold px-3 py-1.5 rounded-full mb-6">
+                <span class="w-1.5 h-1.5 rounded-full bg-[#2E7D32]"></span> EXPLAINABLE AI · CORONARY HEART DISEASE
+              </div>
+              <h1 class="text-4xl md:text-5xl font-extrabold leading-[1.08] tracking-tight text-gray-900">Know Your Heart Risk — <span class="text-[#1A73E8]">No Lab Tests Required</span></h1>
+              <p class="mt-5 text-lg text-gray-600 leading-relaxed max-w-md">CardioXAI uses your self-reported lifestyle and health data with an explainable AI model to estimate your coronary heart disease risk — and tells you <em>why</em>.</p>
+              <div class="mt-8 flex flex-wrap gap-3">
+                <button onClick="{{ start }}" class="bg-[#1A73E8] text-white px-7 py-3.5 rounded-xl text-base font-bold shadow-lg shadow-[#1A73E8]/25 hover:bg-[#1660c4] transition">Start Assessment →</button>
+                <button onClick="{{ goResults }}" class="bg-white text-gray-700 px-7 py-3.5 rounded-xl text-base font-bold border border-gray-300 hover:border-gray-400 transition">View Sample Report</button>
+              </div>
+              <p class="mt-4 text-xs text-gray-400 font-medium">⏱ Takes about 2 minutes · No account needed</p>
+            </div>
+            <div class="relative">
+              <div class="bg-white rounded-3xl border border-gray-200 shadow-xl p-8">
+                <div class="flex items-center justify-between mb-6">
+                  <span class="text-sm font-bold text-gray-500">CHD Risk Score</span>
+                  <span class="text-xs font-bold bg-[#fff4e0] text-[#F57F17] px-2.5 py-1 rounded-full">MODERATE</span>
+                </div>
+                <div class="flex items-end gap-4">
+                  <div class="text-6xl font-extrabold text-[#F57F17]">47<span class="text-2xl">%</span></div>
+                  <div class="flex-1 pb-2">
+                    <div class="h-2.5 rounded-full bg-gray-100 overflow-hidden"><div class="h-full w-[47%] bg-gradient-to-r from-[#2E7D32] via-[#F57F17] to-[#B71C1C]"></div></div>
+                    <div class="flex justify-between text-[10px] font-semibold text-gray-400 mt-1.5"><span>Low</span><span>Moderate</span><span>High</span></div>
+                  </div>
+                </div>
+                <div class="mt-6 space-y-2.5">
+                  <div class="flex items-center gap-3 text-sm"><span class="w-2 h-2 rounded-sm bg-[#B71C1C]"></span><span class="text-gray-600 flex-1">High blood pressure</span><span class="font-bold text-[#B71C1C]">+ risk</span></div>
+                  <div class="flex items-center gap-3 text-sm"><span class="w-2 h-2 rounded-sm bg-[#B71C1C]"></span><span class="text-gray-600 flex-1">BMI 28.4 (overweight)</span><span class="font-bold text-[#B71C1C]">+ risk</span></div>
+                  <div class="flex items-center gap-3 text-sm"><span class="w-2 h-2 rounded-sm bg-[#1A73E8]"></span><span class="text-gray-600 flex-1">Eats vegetables daily</span><span class="font-bold text-[#1A73E8]">− risk</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- FEATURE CARDS -->
+        <section class="max-w-6xl mx-auto px-5 py-16">
+          <div class="grid md:grid-cols-3 gap-6">
+            <div class="bg-white rounded-2xl border border-gray-200 p-7 hover:shadow-lg transition">
+              <div class="w-12 h-12 rounded-xl bg-[#eef4fe] flex items-center justify-center mb-5">
+                <svg viewBox="0 0 24 24" class="w-6 h-6" fill="none" stroke="#1A73E8" stroke-width="2"><path d="M9 11l3 3L22 4M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+              </div>
+              <h3 class="text-lg font-bold text-gray-900 mb-2">No Laboratory Tests</h3>
+              <p class="text-sm text-gray-600 leading-relaxed">Get a risk estimate from lifestyle and history answers alone — no blood draws, no clinic visit required.</p>
+            </div>
+            <div class="bg-white rounded-2xl border border-gray-200 p-7 hover:shadow-lg transition">
+              <div class="w-12 h-12 rounded-xl bg-[#eafbe7] flex items-center justify-center mb-5">
+                <svg viewBox="0 0 24 24" class="w-6 h-6" fill="none" stroke="#2E7D32" stroke-width="2"><path d="M12 2a3 3 0 00-3 3v1a3 3 0 00-3 3 3 3 0 000 6 3 3 0 003 3v1a3 3 0 006 0v-1a3 3 0 003-3 3 3 0 000-6 3 3 0 00-3-3V5a3 3 0 00-3-3z" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+              </div>
+              <h3 class="text-lg font-bold text-gray-900 mb-2">AI-Powered Explanations</h3>
+              <p class="text-sm text-gray-600 leading-relaxed">Every score comes with transparent SHAP-based reasoning showing exactly which factors drove your result.</p>
+            </div>
+            <div class="bg-white rounded-2xl border border-gray-200 p-7 hover:shadow-lg transition">
+              <div class="w-12 h-12 rounded-xl bg-[#fff4e0] flex items-center justify-center mb-5">
+                <svg viewBox="0 0 24 24" class="w-6 h-6" fill="none" stroke="#F57F17" stroke-width="2"><path d="M9 11a4 4 0 100-8 4 4 0 000 8zM3 21v-1a6 6 0 0112 0v1M19 8v6M22 11h-6" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+              </div>
+              <h3 class="text-lg font-bold text-gray-900 mb-2">Personalised Recommendations</h3>
+              <p class="text-sm text-gray-600 leading-relaxed">Receive concrete, prioritised lifestyle actions tailored to the factors raising your individual risk.</p>
+            </div>
+          </div>
+        </section>
+
+        <!-- HOW IT WORKS -->
+        <section class="bg-[#f8fafc] border-y border-gray-200">
+          <div class="max-w-6xl mx-auto px-5 py-16">
+            <h2 class="text-3xl font-extrabold text-gray-900 text-center mb-3">How It Works</h2>
+            <p class="text-gray-500 text-center mb-12 max-w-md mx-auto">Three simple steps from questionnaire to an explainable risk report.</p>
+            <div class="grid md:grid-cols-3 gap-6">
+              <div class="relative bg-white rounded-2xl border border-gray-200 p-7">
+                <div class="w-10 h-10 rounded-full bg-[#1A73E8] text-white font-extrabold flex items-center justify-center mb-5">1</div>
+                <h3 class="text-lg font-bold text-gray-900 mb-2">Fill in the form</h3>
+                <p class="text-sm text-gray-600 leading-relaxed">Answer a short guided questionnaire about your demographics, medical history, and lifestyle.</p>
+              </div>
+              <div class="relative bg-white rounded-2xl border border-gray-200 p-7">
+                <div class="w-10 h-10 rounded-full bg-[#2E7D32] text-white font-extrabold flex items-center justify-center mb-5">2</div>
+                <h3 class="text-lg font-bold text-gray-900 mb-2">AI analyses your data</h3>
+                <p class="text-sm text-gray-600 leading-relaxed">Our explainable model weighs your inputs against established cardiovascular risk patterns.</p>
+              </div>
+              <div class="relative bg-white rounded-2xl border border-gray-200 p-7">
+                <div class="w-10 h-10 rounded-full bg-[#F57F17] text-white font-extrabold flex items-center justify-center mb-5">3</div>
+                <h3 class="text-lg font-bold text-gray-900 mb-2">Receive your risk report</h3>
+                <p class="text-sm text-gray-600 leading-relaxed">See your score, the factors behind it, and personalised actions you can take next.</p>
+              </div>
+            </div>
+            <div class="text-center mt-12">
+              <button onClick="{{ start }}" class="bg-[#1A73E8] text-white px-8 py-3.5 rounded-xl text-base font-bold shadow-lg shadow-[#1A73E8]/25 hover:bg-[#1660c4] transition">Start Your Assessment</button>
+            </div>
+          </div>
+        </section>
+
+        <!-- DISCLAIMER BANNER -->
+        <section class="max-w-6xl mx-auto px-5 py-12">
+          <div class="flex items-start gap-4 bg-[#fff4e0] border border-[#F57F17]/30 rounded-2xl p-6">
+            <svg viewBox="0 0 24 24" class="w-6 h-6 flex-none mt-0.5" fill="none" stroke="#F57F17" stroke-width="2"><path d="M12 9v4M12 17h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+            <p class="text-sm text-gray-700 font-medium leading-relaxed"><span class="font-extrabold text-gray-900">Disclaimer.</span> CardioXAI is a research tool and does not constitute medical advice. Always consult a qualified healthcare professional regarding your health.</p>
+          </div>
+        </section>
+      </div>
+    </sc-if>
+
+    <!-- ===== ASSESSMENT ===== -->
+    <sc-if value="{{ isAssess }}" hint-placeholder-val="{{ false }}">
+      <div class="max-w-2xl mx-auto px-5 py-10 md:py-14">
+        <!-- progress -->
+        <div class="mb-8 sticky top-16 z-30 -mx-5 px-5 pt-3 pb-4 bg-white/95 backdrop-blur border-b border-gray-100 md:static md:mx-0 md:px-0 md:pt-0 md:pb-0 md:bg-transparent md:border-0 md:backdrop-blur-none">
+          <div class="flex items-center justify-between mb-3">
+            <h1 class="text-2xl font-extrabold text-gray-900">Risk Assessment</h1>
+            <span class="text-sm font-bold text-gray-400">Step {{ step }} of 3</span>
+          </div>
+          <div class="h-2 rounded-full bg-gray-100 overflow-hidden">
+            <div class="h-full bg-[#1A73E8] transition-all duration-500 ease-out" style="width: {{ progressPct }}"></div>
+          </div>
+          <div class="grid grid-cols-3 gap-2 mt-3 text-[11px] font-bold uppercase tracking-wide">
+            <span class="text-[#1A73E8]">1 · Demographics</span>
+            <span class="text-center text-gray-400">2 · Medical History</span>
+            <span class="text-right text-gray-400">3 · Lifestyle</span>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-6 md:p-8">
+
+          <!-- STEP 1 -->
+          <sc-if value="{{ isStep1 }}" hint-placeholder-val="{{ true }}">
+            <div class="space-y-6">
+              <h2 class="text-lg font-extrabold text-gray-900">Demographics &amp; Physical</h2>
+
+              <div>
+                <div class="flex items-center gap-1.5 mb-2">
+                  <label class="text-sm font-bold text-gray-700">Age range</label>
+                  <span class="relative group cursor-help">
+                    <svg viewBox="0 0 24 24" class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4M12 8h.01" stroke-linecap="round"></path></svg>
+                    <span class="pointer-events-none absolute left-1/2 -translate-x-1/2 bottom-6 w-56 bg-gray-900 text-white text-xs rounded-lg p-2.5 opacity-0 group-hover:opacity-100 transition z-20 leading-snug">Select the age group that applies to you.</span>
+                  </span>
+                </div>
+                <select value="{{ age }}" onChange="{{ onAge }}" class="w-full border border-gray-300 rounded-xl px-4 py-3 text-sm font-medium text-gray-800 focus:border-[#1A73E8] focus:ring-2 focus:ring-[#1A73E8]/20 outline-none bg-white" style="{{ errAgeStyle }}">
+                  <option value="">Select age range…</option>
+                  <sc-for list="{{ ageOptions }}" as="opt" hint-placeholder-count="4"><option value="{{ opt }}">{{ opt }}</option></sc-for>
+                </select>
+                <sc-if value="{{ errAge }}" hint-placeholder-val="{{ false }}"><p class="text-xs font-semibold text-[#B71C1C] mt-1.5">{{ errAge }}</p></sc-if>
+              </div>
+
+              <div>
+                <div class="flex items-center gap-1.5 mb-2">
+                  <label class="text-sm font-bold text-gray-700">Sex</label>
+                  <span class="relative group cursor-help">
+                    <svg viewBox="0 0 24 24" class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4M12 8h.01" stroke-linecap="round"></path></svg>
+                    <span class="pointer-events-none absolute left-1/2 -translate-x-1/2 bottom-6 w-56 bg-gray-900 text-white text-xs rounded-lg p-2.5 opacity-0 group-hover:opacity-100 transition z-20 leading-snug">Select the biological sex assigned at birth, as this affects cardiovascular risk calculations.</span>
+                  </span>
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                  <button onClick="{{ setSexMale }}" class="py-3 rounded-xl text-sm font-bold border-2 transition" style="{{ sexMaleStyle }}">Male</button>
+                  <button onClick="{{ setSexFemale }}" class="py-3 rounded-xl text-sm font-bold border-2 transition" style="{{ sexFemaleStyle }}">Female</button>
+                </div>
+                <sc-if value="{{ errSex }}" hint-placeholder-val="{{ false }}"><p class="text-xs font-semibold text-[#B71C1C] mt-1.5">{{ errSex }}</p></sc-if>
+              </div>
+
+              <div>
+                <div class="flex items-center gap-1.5 mb-2">
+                  <label class="text-sm font-bold text-gray-700">BMI (Body Mass Index)</label>
+                  <span class="relative group cursor-help">
+                    <svg viewBox="0 0 24 24" class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4M12 8h.01" stroke-linecap="round"></path></svg>
+                    <span class="pointer-events-none absolute left-1/2 -translate-x-1/2 bottom-6 w-56 bg-gray-900 text-white text-xs rounded-lg p-2.5 opacity-0 group-hover:opacity-100 transition z-20 leading-snug">BMI = weight (kg) ÷ height (m)². E.g. 70 kg ÷ (1.75 × 1.75) = 22.9. Use an online BMI calculator if unsure.</span>
+                  </span>
+                </div>
+                <input type="number" step="0.1" value="{{ bmi }}" onChange="{{ onBmi }}" onInput="{{ onBmi }}" class="w-full border border-gray-300 rounded-xl px-4 py-3 text-sm font-medium text-gray-800 focus:border-[#1A73E8] focus:ring-2 focus:ring-[#1A73E8]/20 outline-none" placeholder="e.g. 24.5" style="{{ errBmiStyle }}">
+                <sc-if value="{{ errBmi }}" hint-placeholder-val="{{ false }}"><p class="text-xs font-semibold text-[#B71C1C] mt-1.5">{{ errBmi }}</p></sc-if>
+                <sc-if value="{{ showBmiHint }}" hint-placeholder-val="{{ false }}"><p class="text-xs text-gray-400 mt-1.5">Enter a value between 10 and 70.</p></sc-if>
+              </div>
+
+              <div>
+                <div class="flex items-center gap-1.5 mb-2">
+                  <label class="text-sm font-bold text-gray-700">General Health</label>
+                  <span class="relative group cursor-help">
+                    <svg viewBox="0 0 24 24" class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4M12 8h.01" stroke-linecap="round"></path></svg>
+                    <span class="pointer-events-none absolute left-1/2 -translate-x-1/2 bottom-6 w-56 bg-gray-900 text-white text-xs rounded-lg p-2.5 opacity-0 group-hover:opacity-100 transition z-20 leading-snug">Rate your overall health as you would describe it — from Excellent to Poor.</span>
+                  </span>
+                </div>
+                <select value="{{ genHealth }}" onChange="{{ onHealth }}" class="w-full border border-gray-300 rounded-xl px-4 py-3 text-sm font-medium text-gray-800 focus:border-[#1A73E8] focus:ring-2 focus:ring-[#1A73E8]/20 outline-none bg-white" style="{{ errHealthStyle }}">
+                  <option value="">Select…</option>
+                  <sc-for list="{{ healthOptions }}" as="opt" hint-placeholder-count="5"><option value="{{ opt }}">{{ opt }}</option></sc-for>
+                </select>
+                <sc-if value="{{ errHealth }}" hint-placeholder-val="{{ false }}"><p class="text-xs font-semibold text-[#B71C1C] mt-1.5">{{ errHealth }}</p></sc-if>
+              </div>
+            </div>
+          </sc-if>
+
+          <!-- STEP 2 -->
+          <sc-if value="{{ isStep2 }}" hint-placeholder-val="{{ false }}">
+            <div class="space-y-4">
+              <h2 class="text-lg font-extrabold text-gray-900 mb-2">Medical History</h2>
+              <sc-for list="{{ medHistory }}" as="item" hint-placeholder-count="5">
+                <div>
+                  <div class="flex items-center gap-3 border rounded-xl p-4" style="{{ item.cardStyle }}">
+                    <div class="flex-1 min-w-0">
+                      <div class="flex items-center gap-1.5">
+                        <span class="text-sm font-bold text-gray-800">{{ item.label }}</span>
+                        <span class="relative group cursor-help shrink-0">
+                          <svg viewBox="0 0 24 24" class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4M12 8h.01" stroke-linecap="round"></path></svg>
+                          <span class="pointer-events-none absolute left-0 bottom-6 w-60 bg-gray-900 text-white text-xs rounded-lg p-2.5 opacity-0 group-hover:opacity-100 transition z-20 leading-snug">{{ item.tip }}</span>
+                        </span>
+                      </div>
+                    </div>
+                    <div class="flex gap-2 shrink-0">
+                      <button onClick="{{ item.no }}" class="px-4 py-1.5 rounded-lg text-sm font-bold border-2 transition" style="{{ item.noStyle }}">No</button>
+                      <button onClick="{{ item.yes }}" class="px-4 py-1.5 rounded-lg text-sm font-bold border-2 transition" style="{{ item.yesStyle }}">Yes</button>
+                    </div>
+                  </div>
+                  <sc-if value="{{ item.err }}" hint-placeholder-val="{{ false }}"><p class="text-xs font-semibold text-[#B71C1C] mt-1.5">{{ item.err }}</p></sc-if>
+                </div>
+              </sc-for>
+            </div>
+          </sc-if>
+
+          <!-- STEP 3 -->
+          <sc-if value="{{ isStep3 }}" hint-placeholder-val="{{ false }}">
+            <div class="space-y-4">
+              <h2 class="text-lg font-extrabold text-gray-900 mb-2">Lifestyle &amp; Symptoms</h2>
+              <sc-for list="{{ lifestyle }}" as="item" hint-placeholder-count="6">
+                <div>
+                  <div class="flex items-center gap-3 border rounded-xl p-4" style="{{ item.cardStyle }}">
+                    <div class="flex-1 min-w-0">
+                      <div class="flex items-center gap-1.5">
+                        <span class="text-sm font-bold text-gray-800">{{ item.label }}</span>
+                        <span class="relative group cursor-help shrink-0">
+                          <svg viewBox="0 0 24 24" class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4M12 8h.01" stroke-linecap="round"></path></svg>
+                          <span class="pointer-events-none absolute left-0 bottom-6 w-60 bg-gray-900 text-white text-xs rounded-lg p-2.5 opacity-0 group-hover:opacity-100 transition z-20 leading-snug">{{ item.tip }}</span>
+                        </span>
+                      </div>
+                    </div>
+                    <div class="flex gap-2 shrink-0">
+                      <button onClick="{{ item.no }}" class="px-4 py-1.5 rounded-lg text-sm font-bold border-2 transition" style="{{ item.noStyle }}">No</button>
+                      <button onClick="{{ item.yes }}" class="px-4 py-1.5 rounded-lg text-sm font-bold border-2 transition" style="{{ item.yesStyle }}">Yes</button>
+                    </div>
+                  </div>
+                  <sc-if value="{{ item.err }}" hint-placeholder-val="{{ false }}"><p class="text-xs font-semibold text-[#B71C1C] mt-1.5">{{ item.err }}</p></sc-if>
+                </div>
+              </sc-for>
+
+              <div class="pt-2 space-y-6">
+                <div>
+                  <div class="flex items-center justify-between mb-1.5">
+                    <div class="flex items-center gap-1.5">
+                      <label class="text-sm font-bold text-gray-700">Poor Mental Health Days <span class="text-gray-400 font-medium">(last 30 days)</span></label>
+                      <span class="relative group cursor-help shrink-0">
+                        <svg viewBox="0 0 24 24" class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4M12 8h.01" stroke-linecap="round"></path></svg>
+                        <span class="pointer-events-none absolute left-0 bottom-6 w-64 bg-gray-900 text-white text-xs rounded-lg p-2.5 opacity-0 group-hover:opacity-100 transition z-20 leading-snug">Enter the number of days in the past 30 days when your mental health was not good. Enter 0 if none.</span>
+                      </span>
+                    </div>
+                    <span class="text-sm font-extrabold text-[#1A73E8]">{{ mentalHealth }}</span>
+                  </div>
+                  <input type="range" min="0" max="30" value="{{ mentalHealth }}" onChange="{{ onMental }}" onInput="{{ onMental }}" class="w-full accent-[#1A73E8]">
+                </div>
+                <div>
+                  <div class="flex items-center justify-between mb-1.5">
+                    <div class="flex items-center gap-1.5">
+                      <label class="text-sm font-bold text-gray-700">Poor Physical Health Days <span class="text-gray-400 font-medium">(last 30 days)</span></label>
+                      <span class="relative group cursor-help shrink-0">
+                        <svg viewBox="0 0 24 24" class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4M12 8h.01" stroke-linecap="round"></path></svg>
+                        <span class="pointer-events-none absolute left-0 bottom-6 w-64 bg-gray-900 text-white text-xs rounded-lg p-2.5 opacity-0 group-hover:opacity-100 transition z-20 leading-snug">Enter the number of days in the past 30 days when your physical health was not good. Enter 0 if none.</span>
+                      </span>
+                    </div>
+                    <span class="text-sm font-extrabold text-[#1A73E8]">{{ physHealth }}</span>
+                  </div>
+                  <input type="range" min="0" max="30" value="{{ physHealth }}" onChange="{{ onPhys }}" onInput="{{ onPhys }}" class="w-full accent-[#1A73E8]">
+                </div>
+                <div>
+                  <div class="flex items-center justify-between mb-1.5">
+                    <div class="flex items-center gap-1.5">
+                      <label class="text-sm font-bold text-gray-700">Average Sleep</label>
+                      <span class="relative group cursor-help shrink-0">
+                        <svg viewBox="0 0 24 24" class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4M12 8h.01" stroke-linecap="round"></path></svg>
+                        <span class="pointer-events-none absolute left-0 bottom-6 w-64 bg-gray-900 text-white text-xs rounded-lg p-2.5 opacity-0 group-hover:opacity-100 transition z-20 leading-snug">Enter the average number of hours you sleep per night. Most adults need 7–9 hours.</span>
+                      </span>
+                    </div>
+                    <span class="text-sm font-extrabold text-[#1A73E8]">{{ sleep }} hrs</span>
+                  </div>
+                  <input type="range" min="1" max="14" value="{{ sleep }}" onChange="{{ onSleep }}" onInput="{{ onSleep }}" class="w-full accent-[#1A73E8]">
+                </div>
+              </div>
+            </div>
+          </sc-if>
+
+          <!-- NAV BUTTONS -->
+          <div class="flex items-center justify-between gap-3 mt-8 pt-6 border-t border-gray-100">
+            <button onClick="{{ back }}" class="px-6 py-3 rounded-xl text-sm font-bold text-gray-600 border border-gray-300 hover:bg-gray-50 transition">← Back</button>
+            <sc-if value="{{ isStep3 }}" hint-placeholder-val="{{ false }}">
+              <button onClick="{{ analyse }}" class="px-7 py-3 rounded-xl text-sm font-bold text-white bg-[#2E7D32] hover:bg-[#256628] shadow-lg shadow-[#2E7D32]/25 transition">Analyse My Risk →</button>
+            </sc-if>
+            <sc-if value="{{ showNext }}" hint-placeholder-val="{{ true }}">
+              <button onClick="{{ next }}" class="px-7 py-3 rounded-xl text-sm font-bold text-white bg-[#1A73E8] hover:bg-[#1660c4] transition">Next →</button>
+            </sc-if>
+          </div>
+        </div>
+      </div>
+    </sc-if>
+
+    <!-- ===== ABOUT ===== -->
+    <sc-if value="{{ isAbout }}" hint-placeholder-val="{{ false }}">
+
+      <!-- HERO -->
+      <div class="bg-gradient-to-b from-[#eef4fe] to-white border-b border-gray-200">
+        <div class="max-w-4xl mx-auto px-5 py-16 md:py-20">
+          <div class="inline-flex items-center gap-2 bg-white border border-[#1A73E8]/20 text-[#1A73E8] text-xs font-bold px-3 py-1.5 rounded-full mb-6">
+            <svg viewBox="0 0 24 24" class="w-3.5 h-3.5" fill="#1A73E8"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"></path></svg>
+            ABOUT CARDIOXAI
+          </div>
+          <h1 class="text-4xl md:text-5xl font-extrabold text-gray-900 leading-[1.08] tracking-tight mb-5">A transparency-first approach<br class="hidden md:block"> to coronary heart disease<br class="hidden md:block"> risk screening</h1>
+          <p class="text-lg text-gray-600 leading-relaxed max-w-2xl">CardioXAI is an academic research project built to explore whether self-reported lifestyle and health data — with no blood tests, no clinical appointments, and no specialist access — can produce meaningful, explainable coronary heart disease risk estimates for general-public users.</p>
+        </div>
+      </div>
+
+      <!-- STATS STRIP -->
+      <div class="border-b border-gray-200 bg-white">
+        <div class="max-w-4xl mx-auto px-5 py-6 grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div class="text-center">
+            <div class="text-3xl font-extrabold text-[#1A73E8]">230,000+</div>
+            <div class="text-xs font-semibold text-gray-500 mt-1">Training observations</div>
+          </div>
+          <div class="text-center">
+            <div class="text-3xl font-extrabold text-[#2E7D32]">21</div>
+            <div class="text-xs font-semibold text-gray-500 mt-1">Self-reported features</div>
+          </div>
+          <div class="text-center">
+            <div class="text-3xl font-extrabold text-[#F57F17]">3</div>
+            <div class="text-xs font-semibold text-gray-500 mt-1">Models in the ensemble</div>
+          </div>
+          <div class="text-center">
+            <div class="text-3xl font-extrabold text-[#B71C1C]">SHAP & LIME</div>
+            <div class="text-xs font-semibold text-gray-500 mt-1">Explainability methods</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CARDS -->
+      <div class="max-w-4xl mx-auto px-5 py-12 space-y-6">
+
+        <!-- Card 1 -->
+        <div class="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+          <div class="h-1.5 bg-gradient-to-r from-[#1A73E8] to-[#5b9cf6]"></div>
+          <div class="p-7 md:p-8">
+            <div class="flex items-start gap-5">
+              <div class="w-12 h-12 rounded-2xl bg-[#eef4fe] flex items-center justify-center shrink-0">
+                <svg viewBox="0 0 24 24" class="w-6 h-6" fill="none" stroke="#1A73E8" stroke-width="2"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+              </div>
+              <div>
+                <h2 class="text-lg font-extrabold text-gray-900 mb-3">What is CardioXAI?</h2>
+                <p class="text-sm text-gray-600 leading-relaxed">Most cardiovascular risk tools require laboratory inputs — cholesterol readings, fasting glucose, ECG results — that are inaccessible to millions of people without a clinical appointment. CardioXAI was designed around a different premise: that behavioral and demographic data alone, when processed through an explainable machine learning pipeline, can provide actionable risk awareness. Every prediction comes with a SHAP-based breakdown showing exactly which factors drove the score — not just a number, but a reason. LIME (Local Interpretable Model-Agnostic Explanations) is used alongside SHAP to provide a second independent explanation layer, increasing interpretability robustness.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 2 -->
+        <div class="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+          <div class="h-1.5 bg-gradient-to-r from-[#2E7D32] to-[#4caf50]"></div>
+          <div class="p-7 md:p-8">
+            <div class="flex items-start gap-5">
+              <div class="w-12 h-12 rounded-2xl bg-[#eafbe7] flex items-center justify-center shrink-0">
+                <svg viewBox="0 0 24 24" class="w-6 h-6" fill="none" stroke="#2E7D32" stroke-width="2"><path d="M9 3H5a2 2 0 00-2 2v4m6-6h10a2 2 0 012 2v4M9 3v18m0 0h10a2 2 0 002-2V9M9 21H5a2 2 0 01-2-2V9m0 0h18" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+              </div>
+              <div>
+                <h2 class="text-lg font-extrabold text-gray-900 mb-3">How does the model work?</h2>
+                <p class="text-sm text-gray-600 leading-relaxed mb-3">Three models were trained on the CDC Behavioral Risk Factor Surveillance System (BRFSS) 2022 dataset — over 246,000 adult observations across 21 self-reported features. Logistic Regression, Random Forest, and XGBoost were evaluated independently; the two best-performing models — Logistic Regression and XGBoost — form a weighted consensus ensemble used for final predictions.</p>
+                <p class="text-sm text-gray-600 leading-relaxed">When the ensemble members disagree significantly, the system flags a <span class="font-bold text-[#B71C1C]">Low Confidence</span> result and routes the user toward professional consultation rather than acting on an uncertain score.</p>
+                <!-- model pills -->
+                <div class="flex flex-wrap gap-2 mt-5">
+                  <span class="text-xs font-bold bg-[#eef4fe] text-[#1A73E8] px-3 py-1.5 rounded-full">Logistic Regression</span>
+                  <span class="text-xs font-bold bg-[#fff4e0] text-[#F57F17] px-3 py-1.5 rounded-full">XGBoost</span>
+                  <span class="text-xs font-bold bg-gray-100 text-gray-600 px-3 py-1.5 rounded-full">Consensus Ensemble</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 3 -->
+        <div class="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+          <div class="h-1.5 bg-gradient-to-r from-[#F57F17] to-[#ffb74d]"></div>
+          <div class="p-7 md:p-8">
+            <div class="flex items-start gap-5">
+              <div class="w-12 h-12 rounded-2xl bg-[#fff4e0] flex items-center justify-center shrink-0">
+                <svg viewBox="0 0 24 24" class="w-6 h-6" fill="none" stroke="#F57F17" stroke-width="2"><path d="M12 14l9-5-9-5-9 5 9 5z"></path><path d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+              </div>
+              <div>
+                <h2 class="text-lg font-extrabold text-gray-900 mb-3">Who built this?</h2>
+                <p class="text-sm text-gray-600 leading-relaxed">CardioXAI was developed as an undergraduate academic research project in applied machine learning and explainable AI. It is a proof-of-concept system — not a registered medical device, not clinically validated, and not a replacement for a doctor. Its purpose is to demonstrate that transparent, no-laboratory cardiovascular risk screening is technically feasible and to contribute a reproducible framework to the responsible AI in healthcare literature.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Disclaimer -->
+        <div class="bg-[#fff8ed] border border-[#F57F17]/30 rounded-2xl p-6">
+          <div class="flex items-start gap-4">
+            <div class="w-10 h-10 rounded-xl bg-[#fff4e0] flex items-center justify-center shrink-0">
+              <svg viewBox="0 0 24 24" class="w-5 h-5" fill="none" stroke="#F57F17" stroke-width="2"><path d="M12 9v4M12 17h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+            </div>
+            <div>
+              <p class="text-sm font-extrabold text-gray-900 mb-1.5">Important Disclaimer</p>
+              <p class="text-sm text-gray-700 leading-relaxed">CardioXAI is a research prototype and does not constitute medical advice. Risk scores are statistical estimates derived from population-level data and may not reflect your individual clinical status. Always consult a qualified healthcare professional before making any decisions about your health.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- CTA -->
+        <div class="text-center pt-4 pb-6">
+          <p class="text-sm text-gray-500 mb-5">Ready to see your estimated risk?</p>
+          <button onClick="{{ start }}" class="bg-[#1A73E8] text-white px-10 py-4 rounded-xl text-base font-bold shadow-lg shadow-[#1A73E8]/25 hover:bg-[#1660c4] transition">Start Your Assessment →</button>
+        </div>
+
+      </div>
+    </sc-if>
+
+    <!-- ===== RESULTS ===== -->
+    <sc-if value="{{ isResults }}" hint-placeholder-val="{{ false }}">
+      <div class="max-w-3xl mx-auto px-5 py-8 md:py-12">
+
+
+
+        <!-- ===== HIGH CONFIDENCE ===== -->
+        <sc-if value="{{ isHigh }}" hint-placeholder-val="{{ true }}">
+          <div class="space-y-6">
+            <!-- gauge -->
+            <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-8 text-center">
+<div class="cx-gauge relative w-56 h-56 mx-auto rounded-full" style="--gp: {{ gaugeP }}; background: conic-gradient({{ scoreColor }} calc(var(--gp) * 1%), #eceff3 0);">
+                <div class="absolute inset-[20px] bg-white rounded-full shadow-inner flex flex-col items-center justify-center">
+                  <span class="text-[3.25rem] leading-none font-extrabold" style="color: {{ scoreColor }};">{{ score }}<span class="text-2xl align-top">%</span></span>
+                  <span class="mt-1 text-xs font-bold uppercase tracking-widest text-gray-400">{{ band }} Risk</span>
+                </div>
+              </div>
+              <div class="mt-3">
+                <p class="text-sm font-bold uppercase tracking-widest text-gray-400">CHD Risk Score</p>
+                <span class="inline-flex items-center gap-1.5 mt-3 bg-[#eafbe7] text-[#2E7D32] text-sm font-bold px-3.5 py-1.5 rounded-full">
+                  <svg viewBox="0 0 24 24" class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+                  High Confidence
+                </span>
+              </div>
+            </div>
+
+            <!-- SHAP -->
+            <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-6 md:p-7">
+              <h2 class="text-lg font-extrabold text-gray-900">What Drove Your Score</h2>
+              <p class="text-sm text-gray-500 mb-3">Top 5 factors ranked by SHAP value — how much each pushed your risk up or down.</p>
+              <div style="width:100%; height:260px;">
+                <shap-chart data="{{ shapJson }}"></shap-chart>
+              </div>
+              <div class="flex items-center gap-5 mt-2 pt-3 border-t border-gray-100 text-xs font-semibold text-gray-500">
+                <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-sm bg-[#B71C1C]"></span>Increases risk</span>
+                <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-sm bg-[#1A73E8]"></span>Protective</span>
+              </div>
+              <div class="mt-4 space-y-2">
+                <sc-for list="{{ shap }}" as="item" hint-placeholder-count="5">
+                  <div class="flex items-start gap-2.5">
+                    <span class="mt-1.5 w-2 h-2 rounded-sm shrink-0" style="background: {{ item.barColor }};"></span>
+                    <span class="text-sm text-gray-600 leading-snug">{{ item.label }}</span>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+
+            <!-- force reload --><!-- KNOWLEDGE GRAPH -->
+            <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-6 md:p-7">
+              <h2 class="text-lg font-extrabold text-gray-900">CHD Risk Factor Network</h2>
+              <p class="text-sm text-gray-500 mb-4">How your contributing factors interrelate. Larger nodes carry more weight.</p>
+              <div class="rounded-xl bg-[#f8fafc] border border-gray-100 p-2">
+                {{ graphSvg }}
+              </div>
+              <div class="flex flex-wrap items-center gap-x-5 gap-y-1.5 mt-3 text-xs font-semibold text-gray-500">
+                <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-[#B71C1C]"></span>Strong risk driver</span>
+                <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-[#1A73E8]"></span>Contributing risk</span>
+                <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-[#2E7D32]"></span>Protective</span>
+                <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-[#6b7280]"></span>Non-modifiable</span>
+                <span class="text-gray-400">· node size = SHAP weight</span>
+              </div>
+            </div>
+
+            <!-- RECOMMENDATIONS -->
+            <div>
+              <h2 class="text-lg font-extrabold text-gray-900 mb-3">Personalised Recommendations</h2>
+              <div class="grid md:grid-cols-3 gap-4">
+                <sc-for list="{{ recommendations }}" as="r" hint-placeholder-count="3">
+                  <div class="bg-white rounded-2xl border-l-4 border border-gray-200 p-5" style="border-left-color: {{ r.color }};">
+                    <div class="w-10 h-10 rounded-xl flex items-center justify-center mb-3" style="background: {{ r.bg }};">
+                      <svg viewBox="0 0 24 24" class="w-5 h-5" fill="{{ r.color }}"><path d="{{ r.icon }}"></path></svg>
+                    </div>
+                    <h3 class="text-sm font-extrabold text-gray-900 mb-1.5">{{ r.title }}</h3>
+                    <p class="text-xs text-gray-600 leading-relaxed">{{ r.text }}</p>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+
+            <!-- ACTIONS -->
+            <div class="flex flex-wrap gap-3 pt-2">
+              <button onClick="{{ printReport }}" class="flex-1 min-w-[180px] bg-[#1A73E8] text-white px-6 py-3.5 rounded-xl text-sm font-bold hover:bg-[#1660c4] transition">⬇ Download Report</button>
+              <button onClick="{{ start }}" class="flex-1 min-w-[180px] bg-white text-gray-700 border border-gray-300 px-6 py-3.5 rounded-xl text-sm font-bold hover:bg-gray-50 transition">↺ Retake Assessment</button>
+            </div>
+          </div>
+        </sc-if>
+
+        <!-- ===== LOW CONFIDENCE ===== -->
+        <sc-if value="{{ isLow }}" hint-placeholder-val="{{ false }}">
+          <div class="space-y-6">
+            <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-8 text-center">
+              <div class="w-16 h-16 rounded-full bg-[#fdeaea] flex items-center justify-center mx-auto mb-4">
+                <svg viewBox="0 0 24 24" class="w-8 h-8" fill="none" stroke="#B71C1C" stroke-width="2"><path d="M12 9v4M12 17h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+              </div>
+              <span class="inline-flex items-center gap-1.5 bg-[#fdeaea] text-[#B71C1C] text-sm font-bold px-3.5 py-1.5 rounded-full">Low Confidence</span>
+              <p class="mt-4 text-gray-700 leading-relaxed max-w-md mx-auto">Our models returned conflicting signals on your inputs. We recommend consulting a physician before acting on this assessment.</p>
+            </div>
+
+            <!-- printable summary -->
+            <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-6 md:p-7">
+              <div class="flex items-center justify-between mb-4">
+                <h2 class="text-lg font-extrabold text-gray-900">Your Submitted Answers</h2>
+                <button class="text-xs font-bold text-[#1A73E8] hover:underline">🖨 Print</button>
+              </div>
+              <div class="divide-y divide-gray-100 border border-gray-100 rounded-xl overflow-hidden">
+                <sc-for list="{{ summary }}" as="row" hint-placeholder-count="8">
+                  <div class="flex items-center justify-between px-4 py-2.5 odd:bg-gray-50/50">
+                    <span class="text-sm text-gray-500">{{ row.k }}</span>
+                    <span class="text-sm font-bold text-gray-800">{{ row.v }}</span>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+
+            <div class="flex flex-wrap gap-3 pt-2">
+              <button onClick="{{ start }}" class="flex-1 min-w-[180px] bg-white text-gray-700 border border-gray-300 px-6 py-3.5 rounded-xl text-sm font-bold hover:bg-gray-50 transition">↺ Retake Assessment</button>
+            </div>
+          </div>
+        </sc-if>
+      </div>
+    </sc-if>
+
+  </main>
+
+  <!-- ===== FOOTER ===== -->
+  <footer class="bg-gray-900 text-gray-300">
+    <div class="max-w-6xl mx-auto px-5 py-10 flex flex-col md:flex-row items-center justify-between gap-5">
+      <div class="flex items-center gap-2">
+        <svg viewBox="0 0 24 24" class="w-6 h-6" fill="#B71C1C"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"></path></svg>
+        <span class="font-extrabold text-white">Cardio<span class="text-[#1A73E8]">XAI</span></span>
+      </div>
+      <p class="text-sm text-gray-400 text-center md:text-left">CardioXAI is an academic research project. Not a substitute for medical advice.</p>
+      <a href="https://github.com" target="_blank" rel="noopener" class="flex items-center gap-2 text-sm font-semibold text-gray-300 hover:text-white transition">
+        <svg viewBox="0 0 24 24" class="w-5 h-5" fill="currentColor"><path d="M12 2C6.48 2 2 6.58 2 12.25c0 4.53 2.87 8.37 6.84 9.73.5.1.68-.22.68-.49 0-.24-.01-.88-.01-1.73-2.78.62-3.37-1.37-3.37-1.37-.45-1.18-1.11-1.5-1.11-1.5-.91-.64.07-.62.07-.62 1 .07 1.53 1.06 1.53 1.06.89 1.57 2.34 1.12 2.91.85.09-.66.35-1.12.63-1.38-2.22-.26-4.55-1.14-4.55-5.07 0-1.12.39-2.03 1.03-2.75-.1-.26-.45-1.3.1-2.71 0 0 .84-.28 2.75 1.05a9.4 9.4 0 015 0c1.91-1.33 2.75-1.05 2.75-1.05.55 1.41.2 2.45.1 2.71.64.72 1.03 1.63 1.03 2.75 0 3.94-2.34 4.81-4.57 5.06.36.32.68.94.68 1.9 0 1.37-.01 2.48-.01 2.82 0 .27.18.6.69.49A10.02 10.02 0 0022 12.25C22 6.58 17.52 2 12 2z"></path></svg>
+        GitHub
+      </a>
+    </div>
+  </footer>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = {
+    page: 'landing',
+    step: 1,
+    confidence: 'high',
+    menuOpen: false,
+    gaugePct: 0,
+    errors: {},
+    form: {
+      age: '', sex: '', bmi: '', genHealth: '',
+      highBP: null, highChol: null, diabetes: null, stroke: null, diffWalk: null,
+      smoker: null, heavyAlcohol: null, physAct: null, fruits: null, veggies: null, chestPain: null,
+      mentalHealth: 4, physHealth: 6, sleep: 6
+    }
+  };
+
+  DEMO = {
+    age: '55–59', sex: 'Male', bmi: 28.4, genHealth: 'Fair',
+    highBP: true, highChol: true, diabetes: false, stroke: false, diffWalk: false,
+    smoker: false, heavyAlcohol: false, physAct: false, fruits: false, veggies: true, chestPain: true,
+    mentalHealth: 4, physHealth: 6, sleep: 6
+  };
+
+  BLANK = {
+    age: '', sex: '', bmi: '', genHealth: '',
+    highBP: null, highChol: null, diabetes: null, stroke: null, diffWalk: null,
+    smoker: null, heavyAlcohol: null, physAct: null, fruits: null, veggies: null, chestPain: null,
+    mentalHealth: 4, physHealth: 6, sleep: 6
+  };
+
+  goHome = () => { this.setState({ page:'landing', menuOpen:false }); this.top(); };
+  goAbout = () => { this.setState({ page:'about', menuOpen:false }); this.top(); };
+  start = () => { this.setState({ page:'assess', step:1, menuOpen:false, errors:{}, form:{ ...this.BLANK } }); this.top(); };
+  toggleMenu = () => this.setState(s => ({ menuOpen: !s.menuOpen }));
+  next = () => {
+    const errors = this.validateStep(this.state.step);
+    if (Object.keys(errors).length) { this.setState({ errors }); return; }
+    this.setState(s => ({ step: Math.min(3, s.step+1), errors:{} }));
+    this.top();
+  };
+  back = () => this.setState(s => ({ step: Math.max(1, s.step-1), errors:{} }));
+  goResults = () => { this.setState({ page:'results', gaugeOn:false, form:{ ...this.DEMO } }); this.top(); this.armGauge(); };
+  analyse = () => {
+    const errors = this.validateStep(3);
+    if (Object.keys(errors).length) { this.setState({ errors }); return; }
+    this.setState({ page:'results', gaugeOn:false, errors:{} }); this.top(); this.armGauge();
+  };
+
+  setField = (k, v) => this.setState(s => {
+    const errors = { ...s.errors }; delete errors[k];
+    return { form: { ...s.form, [k]: v }, errors };
+  });
+
+  validateStep(step) {
+    const f = this.state.form; const e = {};
+    if (step === 1) {
+      if (!f.age) e.age = 'Please select your age range.';
+      if (!f.sex) e.sex = 'Please select your sex.';
+      const bmi = parseFloat(f.bmi);
+      if (f.bmi === '' || f.bmi === null || f.bmi === undefined) e.bmi = 'Please enter your BMI.';
+      else if (isNaN(bmi) || bmi < 10 || bmi > 70) e.bmi = 'Enter a valid BMI between 10 and 70.';
+      if (!f.genHealth) e.genHealth = 'Please rate your general health.';
+    } else if (step === 2) {
+      ['highBP','highChol','diabetes','stroke','diffWalk'].forEach(k => { if (f[k]===null||f[k]===undefined) e[k]='Please choose Yes or No.'; });
+    } else if (step === 3) {
+      ['smoker','heavyAlcohol','physAct','fruits','veggies','chestPain'].forEach(k => { if (f[k]===null||f[k]===undefined) e[k]='Please choose Yes or No.'; });
+    }
+    return e;
+  }
+
+  top(){ try { window.scrollTo(0,0); } catch(e){} }
+
+  printReport = () => {
+    const f = this.state.form;
+    const score = 47;
+    const band = score < 30 ? 'LOW' : score <= 60 ? 'MODERATE' : 'HIGH';
+    const scoreColor = score < 30 ? '#2E7D32' : score <= 60 ? '#F57F17' : '#B71C1C';
+    const riskCount = [f.highBP,f.highChol,f.diabetes,f.stroke,f.chestPain,f.smoker,f.heavyAlcohol,f.diffWalk].filter(Boolean).length;
+    const protCount = [f.physAct,f.fruits,f.veggies].filter(Boolean).length;
+    const atypical = f.stroke && riskCount <= 2;
+    const confidence = (riskCount>=2 && riskCount<=4 && protCount>=2)||atypical ? 'low' : 'high';
+    const yn = v => v===true?'Yes':v===false?'No':'Not answered';
+    const now = new Date();
+    const dateStr = now.toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'});
+    const timeStr = now.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});
+
+    const rows = [
+      ['Age Range',f.age||'—'],['Sex',f.sex||'—'],['BMI',f.bmi||'—'],['General Health',f.genHealth||'—'],
+      ['High Blood Pressure',yn(f.highBP)],['High Cholesterol',yn(f.highChol)],
+      ['Diabetes',yn(f.diabetes)],['History of Stroke',yn(f.stroke)],
+      ['Difficulty Walking',yn(f.diffWalk)],['Smoker',yn(f.smoker)],
+      ['Heavy Alcohol Use',yn(f.heavyAlcohol)],['Regular Physical Activity',yn(f.physAct)],
+      ['Eats Fruit Daily',yn(f.fruits)],['Eats Vegetables Daily',yn(f.veggies)],
+      ['Chest Pain / Angina',yn(f.chestPain)],
+      ['Poor Mental Health Days',f.mentalHealth+' / 30'],
+      ['Poor Physical Health Days',f.physHealth+' / 30'],
+      ['Average Sleep',f.sleep+' hours']
+    ];
+    const shap = [
+      {label:'High Blood Pressure',val:'+0.31',risk:true,note:'Hypertension is the strongest modifiable risk factor identified in this assessment.'},
+      {label:'High Cholesterol',val:'+0.22',risk:true,note:'Elevated LDL cholesterol promotes arterial plaque formation and narrows blood flow.'},
+      {label:'BMI (Overweight)',val:'+0.16',risk:true,note:'Body mass index above 25 increases cardiac workload and metabolic strain.'},
+      {label:'Physical Inactivity',val:'+0.11',risk:true,note:'Lack of regular exercise reduces cardiovascular fitness and raises CHD risk.'},
+      {label:'Eats Vegetables Daily',val:'−0.09',risk:false,note:'Daily vegetable consumption is a significant protective dietary factor.'}
+    ];
+    const recs = [
+      {title:'Increase Physical Activity',color:'#2E7D32',text:'Aim for at least 150 minutes of moderate aerobic activity each week. Regular movement strengthens your heart and helps lower blood pressure.'},
+      {title:'Monitor Your Blood Pressure',color:'#B71C1C',text:'Check your blood pressure regularly and review the readings with your doctor. Keeping it controlled is one of the most effective ways to cut CHD risk.'},
+      {title:'Improve Your Diet',color:'#1A73E8',text:'Add daily fruit alongside your vegetables and cut back on processed foods. A balanced diet supports healthy cholesterol and a healthier weight.'}
+    ];
+    const nextSteps = confidence==='high'
+      ? 'Consider sharing this report with your GP or primary care physician to discuss your cardiovascular risk profile and appropriate next steps.'
+      : 'Our models returned conflicting signals on your inputs. We strongly recommend consulting a cardiologist before acting on these results.';
+    const scorePara = band==='LOW'
+      ? 'Your estimated CHD risk is in the low range, suggesting a relatively lower likelihood of coronary heart disease based on your self-reported data. Continue maintaining your healthy lifestyle habits.'
+      : band==='MODERATE'
+      ? 'Your estimated CHD risk is in the moderate range. Some risk factors are present that may increase your likelihood of coronary heart disease. Addressing modifiable risk factors such as physical activity and diet can meaningfully reduce this risk.'
+      : 'Your estimated CHD risk is in the high range. Multiple risk factors are contributing to this score. Please discuss these results with a healthcare professional as soon as possible.';
+
+    const tRows = rows.map(([k,v])=>`<tr><td><strong>${k}</strong></td><td>${v}</td></tr>`).join('');
+    const sRows = shap.map(s=>`<tr><td>${s.label}</td><td class="${s.risk?'ru':'rd'}">${s.val}</td><td class="${s.risk?'ru':'rd'}">${s.risk?'Increases risk':'Protective'}</td><td>${s.note}</td></tr>`).join('');
+    const rItems = recs.map(r=>`<div class="rec" style="border-left-color:${r.color}"><div class="rt" style="color:${r.color}">${r.title}</div><p>${r.text}</p></div>`).join('');
+
+    const html = `<!DOCTYPE html><html><head><meta charset="utf-8"><title>CardioXAI Risk Report</title><style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,serif;font-size:11pt;color:#1f2937;line-height:1.6;background:#fff}
+@page{size:A4;margin:20mm 18mm}
+.hdr{display:flex;align-items:center;gap:14px;border-bottom:2.5px solid #1A73E8;padding-bottom:14px;margin-bottom:14px}
+.logo{font-family:system-ui,sans-serif;font-size:21pt;font-weight:900}
+.logo span{color:#1A73E8}
+.meta{font-size:9pt;color:#6b7280;margin-top:3px}
+.disc{background:#fff8ed;border:1px solid #F57F17;border-radius:4px;padding:10px 14px;font-size:9pt;color:#7c4f00;margin-bottom:20px;line-height:1.5}
+.sec{margin-bottom:22px;page-break-inside:avoid}
+.stitle{font-family:system-ui,sans-serif;font-size:11pt;font-weight:800;color:#1A73E8;border-bottom:1px solid #e5e7eb;padding-bottom:5px;margin-bottom:10px;text-transform:uppercase;letter-spacing:.4px}
+table{width:100%;border-collapse:collapse;font-size:9.5pt}
+th{background:#f1f5f9;text-align:left;padding:7px 10px;font-weight:700;border:1px solid #e2e8f0}
+td{padding:6px 10px;border:1px solid #e2e8f0;vertical-align:top}
+tr:nth-child(even) td{background:#f8fafc}
+.srow{display:flex;gap:20px;align-items:flex-start;background:#f8fafc;padding:14px;border-radius:6px;border:1px solid #e2e8f0;margin-bottom:12px}
+.snum{font-family:system-ui,sans-serif;font-size:38pt;font-weight:900;line-height:1;color:${scoreColor}}
+.smeta h3{font-family:system-ui,sans-serif;font-size:13pt;font-weight:800;color:${scoreColor};margin-bottom:4px}
+.badge{display:inline-block;padding:3px 12px;border-radius:20px;font-size:9pt;font-weight:700;font-family:system-ui,sans-serif;margin-bottom:8px}
+.bh{background:#eafbe7;color:#2E7D32}.bl{background:#fdeaea;color:#B71C1C}
+.ru{color:#B71C1C;font-weight:700}.rd{color:#1A73E8;font-weight:700}
+.rec{margin-bottom:10px;padding:10px 14px;border-left:3px solid;background:#f8fafc;page-break-inside:avoid}
+.rt{font-family:system-ui,sans-serif;font-weight:800;font-size:10.5pt;margin-bottom:4px}
+.ns{background:#eef4fe;border:1px solid #1A73E8;border-radius:6px;padding:14px 16px;font-size:10.5pt}
+.ftr{margin-top:30px;padding-top:10px;border-top:1px solid #e5e7eb;font-size:8pt;color:#9ca3af;text-align:center}
+</style></head><body>
+<div class="hdr">
+  <svg viewBox="0 0 24 24" width="34" height="34" fill="#B71C1C"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+  <div><div class="logo">Cardio<span>XAI</span> Risk Report</div><div class="meta">Generated: ${dateStr} at ${timeStr}</div></div>
+</div>
+<div class="disc"><strong>Important Disclaimer:</strong> This report is generated by an academic AI research tool and is not a substitute for professional medical advice. Please consult a qualified healthcare provider before making any health decisions.</div>
+<div class="sec"><div class="stitle">Section 1 — Submitted Answers</div><table><tbody>${tRows}</tbody></table></div>
+<div class="sec"><div class="stitle">Section 2 — Risk Score</div>
+  <div class="srow"><div class="snum">${score}%</div><div class="smeta"><h3>${band} RISK</h3><span class="badge ${confidence==='high'?'bh':'bl'}">${confidence==='high'?'✓ High Confidence':'⚠ Low Confidence'}</span><p style="font-size:9.5pt">${scorePara}</p></div></div>
+</div>
+<div class="sec"><div class="stitle">Section 3 — Key Risk Drivers (SHAP)</div>
+  <table><thead><tr><th>Factor</th><th>SHAP Value</th><th>Direction</th><th>Clinical Note</th></tr></thead><tbody>${sRows}</tbody></table>
+</div>
+<div class="sec"><div class="stitle">Section 4 — Personalised Recommendations</div>${rItems}</div>
+<div class="sec"><div class="stitle">Section 5 — Next Steps</div><div class="ns">${nextSteps}</div></div>
+<div class="ftr">CardioXAI · Academic research project · Not a substitute for medical advice</div>
+</body></html>`;
+
+    const w = window.open('','_blank','width=820,height=1000');
+    if(w){ w.document.write(html); w.document.close(); w.focus(); setTimeout(()=>w.print(),700); }
+    else { alert('Please allow pop-ups for this site to download the report.'); }
+  };
+  armGauge(){
+    clearInterval(this._raf);
+    const target = 47, dur = 1300, t0 = Date.now();
+    this.setState({ gaugePct: 0 });
+    this._raf = setInterval(() => {
+      const p = Math.min(1, (Date.now() - t0) / dur);
+      const eased = 1 - Math.pow(1 - p, 3);
+      this.setState({ gaugePct: Math.round(eased * target) });
+      if (p >= 1) clearInterval(this._raf);
+    }, 16);
+  }
+  componentWillUnmount(){ clearInterval(this._raf); }
+
+  componentDidMount() {
+    // React/ReactDOM are provided by the DC runtime. Load Recharts + the chart
+    // element AFTER React exists so there is only ever one React instance.
+    if (window.__cxRecharts) return;
+    window.__cxRecharts = true;
+    const load = (src) => new Promise((res, rej) => {
+      const s = document.createElement('script');
+      s.src = src; s.crossOrigin = 'anonymous';
+      s.onload = res; s.onerror = rej;
+      document.head.appendChild(s);
+    });
+    (async () => {
+      try {
+        if (!window.Recharts) {
+          await load('https://unpkg.com/prop-types@15.8.1/prop-types.min.js');
+          await load('https://unpkg.com/react-is@18.2.0/umd/react-is.production.min.js');
+          await load('https://unpkg.com/recharts@2.12.7/umd/Recharts.js');
+        }
+        await load('./shap-chart.js');
+        this.forceUpdate();
+      } catch (e) { console.warn('Recharts load failed', e); }
+    })();
+  }
+
+  yn(v){ return v ? 'Yes' : 'No'; }
+
+  renderVals() {
+    const f = this.state.form;
+    const score = 47;
+    const color = score < 30 ? '#2E7D32' : score <= 60 ? '#F57F17' : '#B71C1C';
+    const band = score < 30 ? 'LOW' : score <= 60 ? 'MODERATE' : 'HIGH';
+
+    // Model confidence: derived from signal conflict heuristic (simulates ensemble disagreement).
+    // Low confidence when moderate risk load (2–4 factors) is offset by ≥2 protective behaviours,
+    // or when stroke history appears without corroborating major risk factors (atypical profile).
+    const riskCount = [f.highBP, f.highChol, f.diabetes, f.stroke, f.chestPain, f.smoker, f.heavyAlcohol, f.diffWalk].filter(Boolean).length;
+    const protCount = [f.physAct, f.fruits, f.veggies].filter(Boolean).length;
+    const atypical = f.stroke && riskCount <= 2;
+    const confidence = (riskCount >= 2 && riskCount <= 4 && protCount >= 2) || atypical ? 'low' : 'high';
+    const arcLen = Math.PI * 120;
+    const dashoffset = this.state.gaugeOn ? arcLen - (score/100)*arcLen : arcLen;
+    const needleAngle = -90 + (this.state.gaugeOn ? (score/100)*180 : 0);
+
+    const ACT = 'background:#1A73E8;border-color:#1A73E8;color:#ffffff;';
+    const INA_S = 'background:#ffffff;border-color:#e5e7eb;color:#6b7280;';
+    const errs = this.state.errors || {};
+    const mk = (key, label, tip) => ({
+      key, label, tip, value: f[key], isYes: f[key]===true, isNo: f[key]===false,
+      yes: () => this.setField(key, true), no: () => this.setField(key, false),
+      yesStyle: f[key]===true ? ACT : INA_S, noStyle: f[key]===false ? ACT : INA_S,
+      err: errs[key], cardStyle: errs[key] ? 'border-color:#B71C1C;background:#fef5f5;' : 'border-color:#e5e7eb;'
+    });
+    const medHistory = [
+      mk('highBP','High Blood Pressure','Select Yes if a doctor has ever told you that you have high blood pressure or hypertension.'),
+      mk('highChol','High Cholesterol','Select Yes if a doctor has ever told you that you have high cholesterol.'),
+      mk('diabetes','Diabetes','Select Yes if you have been diagnosed with Type 1 or Type 2 diabetes.'),
+      mk('stroke','History of Stroke','Select Yes if you have ever been told by a doctor that you had a stroke.'),
+      mk('diffWalk','Difficulty Walking','Select Yes if you have serious difficulty walking or climbing stairs.')
+    ];
+    const lifestyle = [
+      mk('smoker','Smoker','Select Yes if you have smoked at least 100 cigarettes in your lifetime.'),
+      mk('heavyAlcohol','Heavy Alcohol Use','Select Yes if you are male and drink more than 14 drinks per week, or female and drink more than 7 drinks per week.'),
+      mk('physAct','Regular Physical Activity','Select Yes if you did any physical activity or exercise in the past 30 days outside of your regular job.'),
+      mk('fruits','Eats Fruit Daily','Select Yes if you consume fruit one or more times per day on most days.'),
+      mk('veggies','Eats Vegetables Daily','Select Yes if you consume vegetables one or more times per day on most days.'),
+      mk('chestPain','Chest Pain / Angina','Select Yes if you have experienced chest pain, pressure, or tightness — especially during physical activity.')
+    ];
+
+    const shapRaw = [
+      { name:'High BP',     shap:0.31,  label:'High Blood Pressure increased your risk significantly', risk:true },
+      { name:'Cholesterol', shap:0.22,  label:'High Cholesterol increased your risk', risk:true },
+      { name:'BMI',         shap:0.16,  label:'BMI of 28.4 (overweight) increased your risk', risk:true },
+      { name:'Inactivity',  shap:0.11,  label:'No regular physical activity increased your risk', risk:true },
+      { name:'Vegetables',  shap:-0.09, label:'Eating vegetables daily lowered your risk', risk:false }
+    ];
+    const shap = shapRaw.map(d => ({ ...d, barColor: d.risk ? '#B71C1C' : '#1A73E8', tag: d.risk ? 'Risk ↑' : 'Protective ↓' }));
+    const shapJson = JSON.stringify(shapRaw.map(d => ({ name:d.name, value:d.shap })));
+
+    const recommendations = [
+      { color:'#2E7D32', bg:'#eafbe7', title:'Increase Physical Activity', text:'Aim for at least 150 minutes of moderate aerobic activity each week. Regular movement strengthens your heart and helps lower blood pressure.', icon:'M13 2L3 14h7l-1 8 10-12h-7l1-8z' },
+      { color:'#B71C1C', bg:'#fdeaea', title:'Monitor Your Blood Pressure', text:'Check your blood pressure regularly and review the readings with your doctor. Keeping it controlled is one of the most effective ways to cut CHD risk.', icon:'M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z' },
+      { color:'#1A73E8', bg:'#eef4fe', title:'Improve Your Diet', text:'Add daily fruit alongside your vegetables and cut back on processed foods. A balanced diet supports healthy cholesterol and a healthier weight.', icon:'M12 2a10 10 0 100 20 10 10 0 000-20zm0 4a6 6 0 016 6H6a6 6 0 016-6z' }
+    ];
+
+    // Nodes aligned to SHAP bar chart — High BP, Cholesterol, BMI, Inactivity, Vegetables, Age
+    const N = {
+      HTN:{x:214,y:66, r:44, fill:'#B71C1C', label:'High BP',    short:'High BP', shapFmt:'+0.31', desc:'Hypertension is the leading driver of coronary heart disease.'},
+      CHO:{x:336,y:150,r:36, fill:'#B71C1C', label:'Cholesterol', short:'Chol',    shapFmt:'+0.22', desc:'High cholesterol builds arterial plaque and restricts blood flow.'},
+      BMI:{x:88, y:78, r:32, fill:'#1A73E8', label:'BMI',         short:'BMI',     shapFmt:'+0.16', desc:'Elevated BMI raises cardiac workload and CHD risk.'},
+      AGE:{x:112,y:210,r:28, fill:'#6b7280', label:'Age',         short:'Age',     shapFmt:'non-mod.', desc:'Age is a non-modifiable factor that compounds all other risks.'},
+      INA:{x:44, y:156,r:26, fill:'#1A73E8', label:'Inactivity',  short:'Inact.',  shapFmt:'+0.11', desc:'Physical inactivity weakens the heart over time.'},
+      VEG:{x:252,y:210,r:22, fill:'#2E7D32', label:'Vegetables',  short:'Veg',     shapFmt:'−0.09', desc:'Eating vegetables daily is a protective factor against CHD.'}
+    };
+    const graphNodes = Object.keys(N).map(k => {
+      const n = N[k];
+      const fs = n.r >= 34 ? 13 : n.r >= 26 ? 11 : 10;
+      return { ...n, halo: n.r + 8, fs,
+        capY: n.y + n.r + 14, shapY: n.y + n.r + 26,
+        shapTxt: n.shapFmt,
+        title: n.label + ' · ' + n.shapFmt + ' — ' + n.desc };
+    });
+    const ePairs = [['HTN','CHO',3],['HTN','BMI',3.2],['HTN','AGE',2.4],['CHO','AGE',1.8],['BMI','INA',2.8],['BMI','AGE',2],['AGE','INA',2.2],['INA','VEG',1.6],['BMI','VEG',1.8]];
+
+    // Build graph as a React element — avoids SVG template-hole resolution issues
+    const RC = React.createElement;
+    const graphSvg = RC('svg', { viewBox:'0 0 400 296', style:{ width:'100%', height:'auto' } },
+      // edges
+      ...ePairs.map(([a,b,w],i) => RC('line',{ key:'e'+i,
+        x1:N[a].x, y1:N[a].y, x2:N[b].x, y2:N[b].y,
+        stroke:'#cbd5e1', strokeWidth:w, strokeLinecap:'round', opacity:0.7 })),
+      // nodes
+      ...Object.keys(N).map(k => {
+        const n = N[k];
+        const fs = n.r >= 34 ? 13 : n.r >= 26 ? 11 : 10;
+        const capY = n.y + n.r + 14;
+        const shapY = n.y + n.r + 26;
+        return RC('g', { key:k, style:{ cursor:'pointer' } },
+          RC('title', { key:'tt' }, n.label + ' · ' + n.shapFmt + ' — ' + n.desc),
+          RC('circle', { key:'h', cx:n.x, cy:n.y, r:n.r+8, fill:n.fill, opacity:0.18 }),
+          RC('circle', { key:'c', cx:n.x, cy:n.y, r:n.r, fill:n.fill, stroke:'#ffffff', strokeWidth:2.5 }),
+          RC('text',   { key:'t1', x:n.x, y:n.y, textAnchor:'middle', dominantBaseline:'central', fill:'#ffffff', fontSize:fs, fontWeight:800 }, n.short),
+          RC('text',   { key:'t2', x:n.x, y:capY, textAnchor:'middle', fill:'#334155', fontSize:11, fontWeight:800 }, n.label),
+          RC('text',   { key:'t3', x:n.x, y:shapY, textAnchor:'middle', fill:'#64748b', fontSize:9.5, fontWeight:700 }, 'SHAP ' + n.shapFmt)
+        );
+      })
+    );
+
+    const summary = [
+      { k:'Age', v:f.age }, { k:'Sex', v:f.sex }, { k:'BMI', v:String(f.bmi) }, { k:'General Health', v:f.genHealth },
+      { k:'High Blood Pressure', v:this.yn(f.highBP) }, { k:'High Cholesterol', v:this.yn(f.highChol) },
+      { k:'Diabetes', v:this.yn(f.diabetes) }, { k:'History of Stroke', v:this.yn(f.stroke) },
+      { k:'Difficulty Walking', v:this.yn(f.diffWalk) }, { k:'Smoker', v:this.yn(f.smoker) },
+      { k:'Heavy Alcohol Use', v:this.yn(f.heavyAlcohol) }, { k:'Physical Activity', v:this.yn(f.physAct) },
+      { k:'Eats Fruit Daily', v:this.yn(f.fruits) }, { k:'Eats Vegetables Daily', v:this.yn(f.veggies) },
+      { k:'Chest Pain / Angina', v:this.yn(f.chestPain) }, { k:'Poor Mental Health Days', v:f.mentalHealth+' / 30' },
+      { k:'Poor Physical Health Days', v:f.physHealth+' / 30' }, { k:'Sleep', v:f.sleep+' hrs' }
+    ];
+
+    return {
+      isLanding: this.state.page==='landing',
+      isAbout: this.state.page==='about',
+      isAssess: this.state.page==='assess',
+      isResults: this.state.page==='results',
+      menuOpen: this.state.menuOpen,
+      goHome: this.goHome, goAbout: this.goAbout, start: this.start, toggleMenu: this.toggleMenu,
+      goResults: this.goResults, analyse: this.analyse, printReport: this.printReport,
+      step: this.state.step,
+      isStep1: this.state.step===1, isStep2: this.state.step===2, isStep3: this.state.step===3,
+      next: this.next, back: this.back, showNext: this.state.step !== 3,
+      sexMaleStyle: f.sex==='Male' ? ACT : INA_S,
+      sexFemaleStyle: f.sex==='Female' ? ACT : INA_S,
+      progressPct: Math.round(this.state.step/3*100) + '%',
+      ageOptions: ['18–24','25–29','30–34','35–39','40–44','45–49','50–54','55–59','60–64','65–69','70–74','75–79','80+'],
+      healthOptions: ['Excellent','Very Good','Good','Fair','Poor'],
+      age: f.age, sex: f.sex, bmi: f.bmi, genHealth: f.genHealth,
+      sexMale: f.sex==='Male',
+      setSexMale: () => this.setField('sex','Male'),
+      setSexFemale: () => this.setField('sex','Female'),
+      onAge: (e) => this.setField('age', e.target.value),
+      onBmi: (e) => this.setField('bmi', e.target.value),
+      onHealth: (e) => this.setField('genHealth', e.target.value),
+      medHistory, lifestyle,
+      mentalHealth: f.mentalHealth, physHealth: f.physHealth, sleep: f.sleep,
+      onMental: (e) => this.setField('mentalHealth', Number(e.target.value)),
+      onPhys: (e) => this.setField('physHealth', Number(e.target.value)),
+      onSleep: (e) => this.setField('sleep', Number(e.target.value)),
+      errAge: errs.age, errSex: errs.sex, errBmi: errs.bmi, errHealth: errs.genHealth,
+      errAgeStyle: errs.age ? 'border-color:#B71C1C;' : '',
+      errBmiStyle: errs.bmi ? 'border-color:#B71C1C;' : '',
+      errHealthStyle: errs.genHealth ? 'border-color:#B71C1C;' : '',
+      showBmiHint: !errs.bmi,
+      // Confidence derived from model disagreement heuristic:
+      // Low when moderate risk signals (2–4 risk factors) clash with ≥2 protective factors
+      // OR when stroke + no other major risk (conflicting severity signals)
+      confidence,
+      isHigh: confidence === 'high', isLow: confidence === 'low',
+      score, scoreColor: color, band, gaugeP: this.state.gaugePct,
+      shap, shapJson, recommendations, graphSvg, summary
+    };
+  }
+}
+</script>
+</body>
+</html>
