@@ -176,7 +176,7 @@ def generate_pyvis_html(G, output_path=None):
 
     net.set_options(json.dumps({
         "nodes": {
-            "font": {"size": 18, "face": "Public Sans, system-ui, sans-serif", "strokeWidth": 3, "strokeColor": "#ffffff", "bold": {"size": 20}},
+            "font": {"size": 28, "face": "Public Sans, system-ui, sans-serif", "strokeWidth": 3, "strokeColor": "#ffffff", "bold": {"size": 32}},
             "borderWidth": 2,
             "borderWidthSelected": 3,
             "shadow": {"enabled": True, "size": 8, "color": "rgba(0,0,0,0.1)"},
@@ -190,7 +190,7 @@ def generate_pyvis_html(G, output_path=None):
             "forceAtlas2Based": {
                 "gravitationalConstant": -200,
                 "centralGravity": 0.005,
-                "springLength": 320,
+                "springLength": 400,
                 "springConstant": 0.035,
                 "damping": 0.6,
             },
@@ -210,7 +210,7 @@ def generate_pyvis_html(G, output_path=None):
 
     for node_id, data in G.nodes(data=True):
         color = CATEGORY_COLORS.get(data.get('category', ''), '#6b7280')
-        size = 28 + degree_cent.get(node_id, 0) * 40
+        size = 45 + degree_cent.get(node_id, 0) * 55
         shape = 'dot' if data.get('modifiable', True) else 'diamond'
         modifiable_text = 'Modifiable' if data.get('modifiable') else 'Non-modifiable'
         title = f"{data['label']}\n{data['description']}\n({modifiable_text})"
