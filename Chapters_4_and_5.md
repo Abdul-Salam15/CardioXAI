@@ -447,3 +447,144 @@ The results presented in this chapter address each of the five study objectives 
 4. Objective 4 (Uncertainty quantification): The dual-metric confidence tier system was implemented and demonstrated to correctly identify predictions warranting physician consultation. The system successfully routes low-confidence predictions away from definitive risk score presentation.
 
 5. Objective 5 (Web deployment with recommendations): The complete framework was deployed as a Django web application with a mobile-accessible interface, integrating risk prediction, multi-layer explainability, uncertainty communication, and personalised evidence-based lifestyle recommendations in a single consumer-facing system.
+
+
+---
+
+
+CHAPTER FIVE
+
+SUMMARY, CONCLUSION, AND RECOMMENDATIONS
+
+5.0 Introduction
+
+This chapter concludes the study by summarising the key findings, stating the conclusions drawn from the results presented in Chapter Four, identifying the limitations of the study, highlighting the contributions to knowledge, and offering recommendations for future research and practice.
+
+
+5.1 Summary of Findings
+
+This study designed, implemented, and evaluated CardioXAI, an Explainable Artificial Intelligence (XAI) framework for at-home coronary heart disease (CHD) risk self-assessment using exclusively self-reported behavioral and symptom-based data. The framework was developed to address three critical gaps in existing cardiovascular risk prediction systems: the dependence on laboratory-derived clinical variables, the absence of transparent and interpretable explanations for model predictions, and the failure to communicate prediction uncertainty to end users.
+
+The following summarises the principal findings of the study:
+
+5.1.1 Data Preprocessing and Model Training
+
+The Pytlak CDC BRFSS 2022 Heart Disease Health Indicators dataset was successfully preprocessed, yielding 186,487 cleaned observations with 16 self-reported features. The target variable exhibited pronounced class imbalance (87.8% CHD-negative, 12.2% CHD-positive), which was addressed through the application of Synthetic Minority Over-sampling Technique (SMOTE) exclusively to the training subset. Three supervised classification models — Logistic Regression, Random Forest, and XGBoost — were trained on the balanced training data and evaluated on unmodified validation and test subsets preserving the original class distribution.
+
+5.1.2 Model Performance and Ensemble Construction
+
+All three individual models achieved AUC-ROC values exceeding 0.80 on both validation and test subsets, demonstrating clinically acceptable discriminatory ability using self-reported data alone. The three models exhibited complementary precision-recall profiles: Logistic Regression achieved the highest recall (0.7486 test), XGBoost achieved the highest precision (0.5177 test), and Random Forest occupied an intermediate position. The consensus ensemble, constructed from XGBoost (weight = 0.5017) and Logistic Regression (weight = 0.4983) based on validation AUC-ROC proportional weighting, achieved the highest F1 score (0.4126 test) among all models while preserving discriminatory ability (AUC-ROC = 0.8150 test). The near-equal weighting reflected the closely matched discriminatory performance of the two component models.
+
+5.1.3 Explainability Framework
+
+The multi-layer explainability framework produced clinically coherent and cross-method-consistent explanations for individual predictions. SHAP (SHapley Additive exPlanations), implemented through TreeExplainer for XGBoost and LinearExplainer for Logistic Regression with AUC-ROC-proportional weighted averaging, consistently identified Age, General Health, High Blood Pressure, BMI, Diabetes, and Difficulty Walking as the most influential risk drivers — findings that align with established cardiovascular epidemiology. LIME (Local Interpretable Model-Agnostic Explanations) attributions showed strong convergence with SHAP for the top-ranked features, providing independent cross-validation of the primary risk factor identifications.
+
+The CHD Risk Factor Knowledge Graph, comprising 16 nodes and 29 clinically established edges, provided a novel graph-based explanation layer that contextualises individual feature attributions within the broader network of inter-factor relationships. The personalised graph visualisation, which overlays SHAP-identified risk drivers onto the network structure, enables users to understand the systemic and interconnected nature of their risk profile.
+
+5.1.4 Uncertainty Quantification
+
+The dual-metric confidence tier system, combining inter-model disagreement and predictive entropy, successfully classified predictions into High, Medium, and Low confidence tiers. Predictions at the extremes of the probability spectrum consistently achieved High confidence, while predictions near the decision boundary fell into Medium or Low confidence tiers. Low-confidence predictions triggered a distinct user interface pathway that routes users to physician consultation rather than presenting potentially misleading risk scores.
+
+5.1.5 Web Application Deployment
+
+The complete CardioXAI framework was deployed as a Django web application integrating all analytical components — risk prediction, SHAP and LIME explanations, the personalised Knowledge Graph, uncertainty communication, and evidence-based lifestyle recommendations — into a single consumer-facing interface accessible through any standard web browser. The application implements a progressive three-step assessment form, an animated risk gauge with risk band classification, and up to five personalised recommendations derived from SHAP-identified modifiable risk factors.
+
+
+5.2 Conclusion
+
+Based on the findings of this study, the following conclusions are drawn:
+
+1. Clinically acceptable CHD risk discrimination can be achieved using exclusively self-reported behavioral and symptom-based data, without requiring laboratory measurements. The consensus ensemble achieved an AUC-ROC of 0.8150 on the held-out test set, exceeding the 0.80 threshold generally considered clinically acceptable for cardiovascular risk prediction (Weng et al., 2017; Krittanawong et al., 2020). This validates the feasibility of laboratory-free CHD risk screening for at-home self-assessment contexts where clinical testing infrastructure is unavailable or inaccessible.
+
+2. A consensus ensemble combining models with complementary precision-recall profiles produces superior balanced performance compared to any individual model. The weighted combination of XGBoost (high precision, low recall) and Logistic Regression (high recall, low precision) achieved the highest F1 score among all models, demonstrating that ensemble diversity in error patterns is more valuable than ensemble diversity in model architecture alone.
+
+3. Multi-layer explainability using SHAP and LIME produces clinically coherent feature attributions that converge on the same primary risk drivers. The cross-method consistency between SHAP and LIME strengthens confidence that identified risk factors reflect genuine learned patterns rather than artifacts of a single explanation methodology. The SHAP-identified risk drivers are consistent with established cardiovascular risk factor hierarchies in the clinical literature.
+
+4. The CHD Risk Factor Knowledge Graph provides a novel explanation modality that contextualises isolated feature attributions within a connected network of clinical relationships. This graph-based approach communicates the systemic nature of cardiovascular risk in a way that ranked feature lists cannot, and represents a contribution not present in prior BRFSS-based cardiovascular prediction studies.
+
+5. Dual-metric uncertainty quantification using inter-model disagreement and predictive entropy provides a practical mechanism for identifying predictions that warrant physician consultation rather than unsupervised interpretation. The three-tier confidence classification system operationalises the ethical principle that AI-based health assessment tools must communicate prediction reliability to end users.
+
+6. The integration of risk prediction, multi-layer explainability, uncertainty communication, and personalised recommendations into a single consumer-facing web application demonstrates that transparent, safety-aware AI health tools can be made accessible to non-technical users without sacrificing analytical rigour.
+
+
+5.3 Limitations of the Study
+
+Despite the contributions described above, this study is subject to several limitations that should be acknowledged:
+
+5.3.1 Data Limitations
+
+1. Self-reported data bias: All 16 input features are derived from self-reported survey responses, which are subject to recall bias, social desirability bias, and inaccurate self-assessment. Respondents may underreport conditions such as heavy alcohol consumption or overreport protective behaviors such as physical activity. The accuracy of the model's predictions is fundamentally bounded by the accuracy of the self-reported inputs.
+
+2. Cross-sectional design: The BRFSS dataset captures a single cross-sectional snapshot of health status rather than longitudinal trajectories. The model predicts the association between current self-reported features and self-reported CHD history, not the prospective risk of developing CHD over a defined time horizon. This limits the clinical interpretability of the risk score compared to prospective cohort-derived models such as the Framingham Risk Score.
+
+3. Geographic and demographic scope: The BRFSS dataset is drawn exclusively from the United States adult population. The model's learned associations may not generalise to populations with different genetic backgrounds, dietary patterns, healthcare access profiles, or disease prevalence rates. Application to non-US populations would require validation on regionally appropriate datasets.
+
+4. Binary feature encoding: Several features that are clinically continuous or multi-level (e.g., diabetes type, smoking intensity, alcohol quantity) are encoded as binary variables in the dataset. This encoding discards clinically relevant dose-response information and may reduce the model's ability to discriminate between individuals with different levels of exposure to the same risk factor.
+
+5.3.2 Model Limitations
+
+5. Calibration overestimation: The ensemble model systematically overestimates CHD risk due to the SMOTE rebalancing applied during training, as demonstrated by the calibration analysis in Section 4.6. While overestimation does not affect the model's discriminatory ability (AUC-ROC), it means that the absolute probability values should not be interpreted as true population-level risk estimates. No post-hoc calibration correction (e.g., Platt scaling, isotonic regression) was applied in the current implementation.
+
+6. Fixed classification threshold: The binary classification threshold is fixed at 0.5 for all predictions. Threshold optimisation based on clinical cost considerations (e.g., the relative cost of false negatives versus false positives in a screening context) was not performed and may yield improved clinical utility.
+
+7. Absence of external validation: The model was trained and evaluated on subsets of a single dataset (BRFSS 2022). No external validation was conducted on independent datasets from different survey years, geographic regions, or data collection methodologies. The generalisation performance reported may therefore be optimistic relative to true out-of-distribution performance.
+
+5.3.3 Explainability Limitations
+
+8. Knowledge Graph edges are expert-curated: The 29 edges in the CHD Risk Factor Knowledge Graph are derived from clinical literature rather than learned from the data. While this ensures clinical validity, the graph does not capture data-driven associations that may exist but are not documented in the curated edge set. The edge weights are assigned based on clinical judgement rather than estimated from empirical correlation or causal analysis.
+
+9. LIME stochasticity: LIME explanations are generated through stochastic perturbation sampling (500 samples per prediction), which introduces variability in the lower-ranked feature attributions across repeated evaluations of the same input. While the top-ranked features are stable, features ranked 5th through 8th may vary between evaluations, which could reduce user confidence in the explanation output if multiple evaluations of the same profile produce visibly different LIME displays.
+
+5.3.4 Deployment Limitations
+
+10. No clinical user evaluation: The CardioXAI application was not evaluated through user studies with target end users (patients, general public) or clinical domain experts (cardiologists, general practitioners). The usability, comprehensibility, and perceived trustworthiness of the SHAP explanations, LIME panel, Knowledge Graph, and recommendation outputs have not been empirically assessed.
+
+11. No regulatory compliance assessment: The application has not been assessed for compliance with medical device regulations (e.g., EU Medical Device Regulation, FDA Software as a Medical Device guidance) or health data privacy frameworks (e.g., HIPAA, UK GDPR). Deployment in regulated healthcare contexts would require such assessments.
+
+
+5.4 Contributions to Knowledge
+
+This study makes the following contributions to the body of knowledge in the fields of explainable artificial intelligence and cardiovascular risk prediction:
+
+1. Laboratory-free CHD prediction with clinically acceptable performance: The study demonstrates that an AUC-ROC of 0.8150 can be achieved using exclusively self-reported behavioral features, validating the feasibility of at-home CHD risk screening without laboratory infrastructure. This extends the work of Hasnat et al. (2025) and Tompra et al. (2024) by embedding the prediction model within a complete consumer-facing application rather than reporting standalone model performance.
+
+2. Multi-layer explainability framework with cross-method validation: The integration of SHAP as the primary explanation engine with LIME as an independent cross-validation mechanism provides a dual-method transparency architecture that strengthens confidence in feature attribution outputs. This approach extends the SHAP-LIME combination validated by Rezk et al. (2024) from a clinical dataset context to a large-scale self-reported data context.
+
+3. CHD Risk Factor Knowledge Graph: The construction and personalisation of a graph-based representation of inter-factor relationships represents a novel explainability modality not present in prior BRFSS-based cardiovascular prediction studies. The Knowledge Graph transforms isolated feature attribution scores into a connected risk narrative, providing a systems-level view of individual CHD risk that complements the feature-level explanations provided by SHAP and LIME.
+
+4. Integrated uncertainty quantification with user-facing safety routing: The dual-metric confidence tier system (inter-model disagreement and predictive entropy) provides a practical operationalisation of the ethical principles articulated by Kompa et al. (2021) and Begoli et al. (2019) regarding uncertainty communication in medical AI. The implementation demonstrates that uncertainty-aware prediction can be integrated into consumer-facing health tools without requiring users to interpret raw statistical uncertainty measures.
+
+5. End-to-end deployment as a consumer-facing web application: The integration of risk prediction, multi-layer explainability, uncertainty quantification, and personalised evidence-based recommendations into a single Django web application demonstrates a complete translational pathway from model development to end-user deployment, addressing the gap between research prototypes and deployable health tools.
+
+
+5.5 Recommendations
+
+Based on the findings, conclusions, and limitations of this study, the following recommendations are made for future research and practice:
+
+5.5.1 Recommendations for Future Research
+
+1. Post-hoc calibration: Future iterations should apply Platt scaling or isotonic regression to the ensemble output probabilities to correct the systematic overestimation identified in the calibration analysis. Calibration correction would improve the alignment between predicted risk scores and true positive rates without sacrificing the discriminatory gains achieved through SMOTE-based training.
+
+2. Threshold optimisation: The fixed 0.5 classification threshold should be replaced with a threshold optimised for clinical utility, potentially using decision curve analysis or cost-sensitive threshold selection that accounts for the differential harms of false positives (unnecessary anxiety) and false negatives (missed CHD cases) in a consumer screening context.
+
+3. External validation: The model should be validated on independent datasets, including BRFSS surveys from different years, equivalent surveys from non-US populations (e.g., the UK Health Survey for England, the European Health Interview Survey), and, where available, datasets with both self-reported features and confirmed clinical outcomes to assess the gap between self-reported and clinically verified CHD status.
+
+4. Longitudinal prediction: Future work should explore the development of prospective risk models using longitudinal data that capture changes in behavioral risk factors over time, enabling the prediction of future CHD event risk rather than cross-sectional association with self-reported CHD history. Integration with wearable health device data could provide continuous, objectively measured behavioral inputs.
+
+5. Data-driven Knowledge Graph construction: The expert-curated Knowledge Graph should be complemented with data-driven edge discovery using techniques such as mutual information, partial correlation analysis, or Bayesian network structure learning. Comparing expert-curated and data-driven graphs would identify clinically relevant associations that may be present in the data but absent from the curated edge set.
+
+6. Advanced ensemble methods: Future work should investigate stacking ensembles and neural network meta-learners as alternatives to the linear weighted average combination used in the current consensus ensemble. Additionally, exploring the inclusion of all three models (including Random Forest) with learnable weights may yield improved balanced performance.
+
+7. Fairness and bias auditing: The model's performance should be audited across demographic subgroups (age, sex, race/ethnicity) to identify and mitigate potential disparities in prediction accuracy or calibration. Fairness-aware training techniques should be investigated to ensure equitable performance across population subgroups.
+
+5.5.2 Recommendations for Practice
+
+8. User evaluation studies: Before deployment in any healthcare-adjacent context, CardioXAI should undergo structured user evaluation studies with target end users (members of the public) and clinical domain experts (cardiologists, general practitioners) to assess the comprehensibility, usability, and perceived trustworthiness of the explanation outputs and recommendation content.
+
+9. Clinical integration pathway: Healthcare providers and public health organisations should consider integrating tools like CardioXAI as pre-screening instruments that identify individuals who may benefit from formal clinical cardiovascular risk assessment. The tool's value lies in behavioural awareness and risk factor education rather than clinical diagnosis.
+
+10. Regulatory compliance: Any deployment beyond research or educational use should undergo assessment for compliance with applicable medical device regulations and health data privacy frameworks. The application should be clearly positioned as an informational self-assessment tool, not a diagnostic device, in all user-facing communications.
+
+11. Continuous model updating: As new BRFSS survey data becomes available annually, the model should be periodically retrained and recalibrated to reflect evolving population health profiles, emerging risk factor associations, and changes in survey methodology.
+
+12. Accessibility and health literacy: Future development should prioritise accessibility compliance (WCAG 2.1 AA) and health literacy considerations, ensuring that the explanation outputs and recommendation content are comprehensible to users with varying levels of education and health literacy. Plain-language summaries, visual aids, and multilingual support would expand the reach of the tool to underserved populations who stand to benefit most from accessible cardiovascular risk education.
