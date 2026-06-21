@@ -39,10 +39,6 @@ Table 4.1: Features Retained for Model Training (16 Features)
 
 The target variable exhibited a pronounced class imbalance. Of the 186,487 cleaned observations, 163,741 (87.8%) were classified as CHD-negative (HeartDiseaseorAttack = 0) and 22,746 (12.2%) as CHD-positive (HeartDiseaseorAttack = 1). This 87.8/12.2 distribution reflects the population-level prevalence of self-reported coronary heart disease among US adults captured by the BRFSS survey and is consistent with published epidemiological estimates (CDC, 2024; Martin et al., 2024). The degree of imbalance is less extreme than the approximately 5% positive rate reported in some BRFSS subsets, which may reflect differences in the specific Pytlak cleaning and variable selection criteria applied to this version of the dataset.
 
-[INSERT FIGURE 4.1 HERE: Bar chart showing target variable class distribution — 87.8% CHD-Negative (class 0) vs. 12.2% CHD-Positive (class 1). Use contrasting colours (e.g., blue for negative, red for positive) with percentage labels above each bar.]
-
-Figure 4.1: Target Variable Class Distribution (87.8% CHD-Negative, 12.2% CHD-Positive)
-
 
 4.1.3 Data Splitting and SMOTE Application
 
@@ -58,10 +54,6 @@ Synthetic Minority Over-sampling Technique (SMOTE) was applied exclusively to th
 - After SMOTE: 229,188 observations (50.0% negative / 50.0% positive)
 
 The validation and test subsets were left unmodified to ensure that all performance metrics reflect evaluation on the original, naturally imbalanced data distribution. This design prevents the optimistic bias that would result from evaluating on synthetically balanced data (Chawla et al., 2002).
-
-[INSERT FIGURE 4.2 HERE: Side-by-side bar chart or stacked bar showing class distribution before and after SMOTE. Left group: "Before SMOTE" with 87.8% negative / 12.2% positive. Right group: "After SMOTE" with 50% negative / 50% positive. Include count labels (130,540 before; 229,188 after).]
-
-Figure 4.2: Training Set Class Distribution Before and After SMOTE Application
 
 
 4.2 Individual Model Performance
@@ -105,10 +97,6 @@ Second, the three models exhibit markedly different precision-recall trade-offs,
 
 Third, the complementary precision-recall profiles of XGBoost (high precision, low recall) and Logistic Regression (high recall, low precision) provide the theoretical basis for their combination into a consensus ensemble, as each model compensates for the other's primary weakness.
 
-[INSERT FIGURE 4.3 HERE: Grouped bar chart comparing Precision, Recall, F1 Score, and AUC-ROC across the three individual models (Logistic Regression, Random Forest, XGBoost) on the validation subset. Use distinct colours per model. Y-axis from 0 to 1.0.]
-
-Figure 4.3: Validation Set Performance Comparison Across Individual Models
-
 
 4.2.3 Test Set Results
 
@@ -123,10 +111,6 @@ Table 4.3: Individual Model Performance on Test Subset
 | XGBoost              | 0.8792   | 0.5177    | 0.1586 | 0.2428   | 0.8117  |
 
 The test set results confirm the patterns observed on the validation subset with minimal degradation. The maximum absolute difference between validation and test AUC-ROC across all models is 0.0088 (Random Forest: 0.8131 validation versus 0.8043 test), indicating stable generalisation and no evidence of overfitting. The consistency of precision-recall profiles between validation and test subsets further confirms the robustness of each model's learned decision boundaries.
-
-[INSERT FIGURE 4.4 HERE: ROC curves for all three individual models plotted on a single axis. X-axis: False Positive Rate (0 to 1). Y-axis: True Positive Rate (0 to 1). Include diagonal reference line (random classifier). Legend with model names and AUC values: LR (0.8112), RF (0.8043), XGBoost (0.8117).]
-
-Figure 4.4: Receiver Operating Characteristic (ROC) Curves for Individual Models on Test Subset
 
 
 4.3 Consensus Ensemble Construction and Evaluation
@@ -173,14 +157,6 @@ The ensemble successfully balances the precision-recall trade-off by combining t
 
 The ensemble AUC-ROC on the test set (0.8150) is virtually identical to the individual XGBoost test AUC-ROC (0.8117) and Logistic Regression test AUC-ROC (0.8112), indicating that the ensemble preserves the discriminatory ability of its component models while improving threshold-dependent metrics.
 
-[INSERT FIGURE 4.5 HERE: ROC curves for the consensus ensemble overlaid with the two component models (XGBoost and Logistic Regression) on the test subset. Legend: Ensemble AUC = 0.8150, XGBoost AUC = 0.8117, LR AUC = 0.8112. Include diagonal reference line.]
-
-Figure 4.5: ROC Curves Comparing Consensus Ensemble with Component Models on Test Subset
-
-[INSERT FIGURE 4.6 HERE: Precision-Recall curves for all four models (LR, RF, XGBoost, Ensemble) on the test subset. X-axis: Recall (0 to 1). Y-axis: Precision (0 to 1). Include horizontal reference line at the positive class prevalence (0.122).]
-
-Figure 4.6: Precision-Recall Curves for All Models on Test Subset
-
 Table 4.5 provides a comprehensive side-by-side comparison of all four models on the test subset.
 
 Table 4.5: Complete Model Comparison on Test Subset
@@ -192,14 +168,6 @@ Table 4.5: Complete Model Comparison on Test Subset
 | XGBoost              | 0.8792   | 0.5177    | 0.1586 | 0.2428   | 0.8117  |
 | Consensus Ensemble   | 0.8391   | 0.3724    | 0.4627 | 0.4126   | 0.8150  |
 
-[INSERT FIGURE 4.7 HERE: Grouped bar chart comparing all four models (LR, RF, XGBoost, Ensemble) across all five metrics (Accuracy, Precision, Recall, F1, AUC-ROC) on the test subset. Use distinct colours per model. Highlight the Ensemble bars with a bold border or pattern to emphasise the selected model.]
-
-Figure 4.7: Complete Test Set Performance Comparison Across All Models
-
-[INSERT FIGURE 4.8 HERE: Confusion matrices for all four models on the test subset, arranged in a 2x2 grid. Each matrix shows True Negatives, False Positives, False Negatives, and True Positives with count labels and colour intensity proportional to cell values.]
-
-Figure 4.8: Confusion Matrices for All Models on Test Subset
-
 
 4.4 Explainability Framework Results
 
@@ -209,11 +177,11 @@ SHAP was implemented using two model-specific explainers: shap.TreeExplainer for
 
 For each individual prediction, the framework computes SHAP values for all 16 features and presents the top 8 by absolute magnitude. Each SHAP value indicates the direction (risk-increasing if positive, protective if negative) and magnitude of that feature's contribution to the specific prediction, relative to the model's baseline output.
 
-The SHAP outputs for each prediction include:
+The SHAP outputs for each prediction are rendered in the CardioXAI results page as:
 
-1. A bidirectional bar chart displaying the top 8 features ranked by absolute SHAP value, with red bars indicating risk-increasing contributions and blue bars indicating protective contributions.
+1. A bidirectional bar chart displaying the top 8 features ranked by absolute SHAP value, with red bars indicating risk-increasing contributions and blue bars indicating protective contributions (see Figure 4.4).
 
-2. A plain-language summary identifying the top three positive SHAP contributors as the user's primary behavioral CHD risk drivers.
+2. A plain-language summary identifying the top positive SHAP contributors as the user's primary behavioral CHD risk drivers, rendered as a bulleted list beneath the bar chart.
 
 At the global level, SHAP analysis across the test set consistently identified the following features as the most influential risk drivers, consistent with established cardiovascular epidemiology:
 
@@ -226,38 +194,14 @@ At the global level, SHAP analysis across the test set consistently identified t
 
 Among protective factors, Physical Activity (PhysActivity) and daily Fruit and Vegetable consumption (Fruits, Veggies) consistently received negative SHAP values, indicating that these behavioral factors reduce the model's CHD risk estimate. This finding aligns with the PURE study evidence that modifiable behavioral factors explain a large proportion of CHD events across income settings (Yusuf et al., 2020).
 
-[INSERT FIGURE 4.9 HERE: SHAP global beeswarm (summary) plot for the ensemble model on the test subset. Each dot represents one observation. X-axis: SHAP value (impact on model output). Y-axis: Features ranked by mean absolute SHAP value. Colour gradient from blue (low feature value) to red (high feature value). Show all 16 features.]
-
-Figure 4.9: Global SHAP Beeswarm Plot Showing Feature Impact Distribution Across Test Set
-
-[INSERT FIGURE 4.10 HERE: SHAP global bar chart showing mean absolute SHAP values for all 16 features, ranked from highest to lowest. Horizontal bars with feature names on the Y-axis and mean |SHAP value| on the X-axis.]
-
-Figure 4.10: Global Feature Importance Ranked by Mean Absolute SHAP Value
-
-[INSERT FIGURE 4.11 HERE: SHAP waterfall plot for a single representative high-risk prediction. Show the contribution of each feature (top 8) from the base value (E[f(x)]) to the final model output f(x). Red arrows for risk-increasing features, blue arrows for protective features.]
-
-Figure 4.11: SHAP Waterfall Plot for a Representative High-Risk Individual Prediction
-
-[INSERT FIGURE 4.12 HERE: SHAP waterfall plot for a single representative low-risk prediction. Same format as Figure 4.11, showing how protective factors dominate the feature contributions.]
-
-Figure 4.12: SHAP Waterfall Plot for a Representative Low-Risk Individual Prediction
-
 
 4.4.2 LIME (Local Interpretable Model-Agnostic Explanations) Results
 
-LIME was implemented using the lime Python library's LimeTabularExplainer class as a model-agnostic complement to SHAP. For each prediction, LIME generates 500 perturbed samples in the neighbourhood of the input instance, obtains the consensus ensemble's predictions on those samples, and fits a locally weighted linear model to produce feature attribution weights. The top 8 features by absolute LIME weight are displayed for each prediction.
+LIME was implemented using the lime Python library's LimeTabularExplainer class as a model-agnostic complement to SHAP. For each prediction, LIME generates 500 perturbed samples in the neighbourhood of the input instance, obtains the consensus ensemble's predictions on those samples, and fits a locally weighted linear model to produce feature attribution weights. The top 8 features by absolute LIME weight are displayed for each prediction (see Figure 4.5).
 
 LIME serves as an internal cross-validation mechanism for the SHAP explanations, following the approach validated by Rezk et al. (2024). For each prediction, the framework generates both SHAP and LIME explanations independently, allowing users and system operators to assess whether the two explanation methods converge on the same primary risk drivers.
 
 In testing across representative predictions, LIME attributions showed strong convergence with SHAP for the top-ranked features. Age, General Health, High Blood Pressure, BMI, and Diabetes consistently appeared among the top LIME features when they also appeared among the top SHAP features for the same prediction. This cross-method consistency provides additional confidence that the identified risk drivers reflect genuine patterns learned by the model rather than artifacts of a single explanation method (Rezk et al., 2024).
-
-[INSERT FIGURE 4.13 HERE: LIME explanation output for a representative prediction. Horizontal bar chart showing the top 8 features with their LIME weights. Orange/red bars for features contributing toward CHD risk, blue/green bars for protective features. Include the feature condition labels (e.g., "Age > 9", "GenHlth > 3").]
-
-Figure 4.13: LIME Feature Attribution Output for a Representative Prediction
-
-[INSERT FIGURE 4.14 HERE: Side-by-side comparison of SHAP and LIME top-5 feature rankings for the same representative prediction. Two columns showing rank, feature name, and attribution value/weight for each method, highlighting convergence in top features and divergence in lower-ranked features.]
-
-Figure 4.14: SHAP vs. LIME Feature Attribution Comparison for the Same Prediction
 
 Minor divergences between SHAP and LIME attributions were observed in the ordering and magnitude of lower-ranked features (typically features ranked 5th through 8th). These differences are expected given the distinct theoretical foundations of the two methods: SHAP computes exact Shapley values based on marginal contributions across all feature coalitions, while LIME fits a local linear approximation using perturbed samples in the input neighbourhood. The stochastic perturbation process in LIME introduces sampling variability that primarily affects features with smaller absolute contributions (Garreau & von Luxburg, 2020). This observation supports the design decision described in Section 3.8.2 to position LIME as an internal validation mechanism rather than the primary user-facing explanation engine.
 
@@ -290,17 +234,9 @@ The 29 edges encode clinically established relationships between CHD risk factor
 
 Personalised Graph Visualisation:
 
-For each individual prediction, the Knowledge Graph is personalised by overlaying the user's SHAP-identified risk drivers onto the graph structure. Nodes corresponding to features with positive SHAP values (risk-increasing) are annotated with their SHAP contribution direction, enabling users to see not only which individual behaviors drive their risk estimate but how those behaviors relate to and interact with each other within the broader risk factor network. This graph-level insight transforms isolated feature attribution scores into a connected risk narrative, going beyond what a ranked list of SHAP values or LIME coefficients can convey in isolation.
+For each individual prediction, the Knowledge Graph is personalised by overlaying the user's SHAP-identified risk drivers onto the graph structure. Nodes corresponding to features with positive SHAP values (risk-increasing) are annotated with their SHAP contribution direction and magnitude, enabling users to see not only which individual behaviors drive their risk estimate but how those behaviors relate to and interact with each other within the broader risk factor network. This graph-level insight transforms isolated feature attribution scores into a connected risk narrative, going beyond what a ranked list of SHAP values or LIME coefficients can convey in isolation. The personalised knowledge graph as rendered in the CardioXAI application is shown in Figure 4.6.
 
-The interactive Pyvis visualisation supports hover-to-inspect functionality, displaying each node's full feature name, clinical description, and modifiability status. Users can drag nodes to rearrange the layout and zoom to explore subregions of the graph. The force-directed ForceAtlas2 layout algorithm produces a spatially coherent arrangement in which tightly connected risk factor clusters (e.g., the cardiovascular cluster of HighBP, HighChol, and Stroke; the metabolic cluster of BMI and Diabetes) are positioned closer together, visually communicating the systemic nature of CHD risk.
-
-[INSERT FIGURE 4.15 HERE: Full CHD Risk Factor Knowledge Graph visualisation showing all 16 nodes and 29 edges. Nodes colour-coded by category: Cardiovascular (red), Metabolic (orange), Lifestyle (green), Health Status (blue), Demographic (grey). Node size proportional to degree centrality. Edge thickness proportional to relationship weight. Circular nodes for modifiable factors, diamond nodes for non-modifiable factors (Age, Sex, Stroke).]
-
-Figure 4.15: CHD Risk Factor Knowledge Graph (16 Nodes, 29 Edges)
-
-[INSERT FIGURE 4.16 HERE: Personalised Knowledge Graph for a representative high-risk user. Same structure as Figure 4.15, but with the user's activated risk factors (features with positive SHAP values) highlighted with bold borders or glowing effect. Show which nodes are "active" for this specific user.]
-
-Figure 4.16: Personalised Knowledge Graph for a Representative High-Risk Prediction
+The interactive Pyvis visualisation (Figure 4.7) supports hover-to-inspect functionality, displaying each node's full feature name, clinical description, and modifiability status. Users can drag nodes to rearrange the layout and zoom to explore subregions of the graph. The force-directed ForceAtlas2 layout algorithm produces a spatially coherent arrangement in which tightly connected risk factor clusters (e.g., the cardiovascular cluster of HighBP, HighChol, and Stroke; the metabolic cluster of BMI and Diabetes) are positioned closer together, visually communicating the systemic nature of CHD risk.
 
 
 4.5 Uncertainty Quantification Results
@@ -325,7 +261,7 @@ These two metrics are combined to classify each prediction into one of three con
 
 - Medium Confidence: Disagreement <= 0.25 AND Entropy <= 0.95. Models show moderate agreement with some uncertainty, warranting caution but not blocking risk score display.
 
-- Low Confidence: Disagreement > 0.25 OR Entropy > 0.95. Substantial disagreement between models or extreme proximity to the decision boundary indicates that the prediction is insufficiently reliable for unsupervised interpretation. Low-confidence predictions trigger a distinct user interface pathway that routes users to a physician consultation prompt rather than presenting a potentially misleading risk score.
+- Low Confidence: Disagreement > 0.25 OR Entropy > 0.95. Substantial disagreement between models or extreme proximity to the decision boundary indicates that the prediction is insufficiently reliable for unsupervised interpretation. Low-confidence predictions trigger a distinct user interface pathway that routes users to a physician consultation prompt rather than presenting a potentially misleading risk score (see Figure 4.9).
 
 The three-tier system operationalises the ethical principle articulated by Kompa et al. (2021) that communicating prediction uncertainty is an ethical obligation in medical ML systems, preventing the false impression of model reliability that can lead to harmful decisions.
 
@@ -342,15 +278,7 @@ As an illustrative example, a test case with the following profile — high bloo
 - Entropy: -0.427 * log2(0.427) - 0.573 * log2(0.573) = 0.985
 - Confidence tier: Low (disagreement > 0.25 and entropy > 0.95)
 
-In this case, the large disagreement between the two models and the near-maximum entropy appropriately trigger the low-confidence pathway, routing the user to a physician consultation prompt. This example illustrates a scenario where the two models have learned genuinely different risk assessments from the same input profile, and presenting a single definitive risk score would be misleading.
-
-[INSERT FIGURE 4.17 HERE: Scatter plot or distribution chart showing the relationship between ensemble probability (X-axis) and inter-model disagreement (Y-axis) across test set predictions. Overlay horizontal dashed lines at disagreement thresholds (0.15 and 0.25) and vertical dashed line at ensemble probability = 0.5. Colour-code points by confidence tier: green (High), amber (Medium), red (Low).]
-
-Figure 4.17: Ensemble Probability vs. Inter-Model Disagreement with Confidence Tier Classification
-
-[INSERT FIGURE 4.18 HERE: Pie chart or stacked bar showing the distribution of predictions across the three confidence tiers (High, Medium, Low) on the test subset. Include percentage and count labels for each tier.]
-
-Figure 4.18: Distribution of Predictions Across Confidence Tiers on Test Subset
+In this case, the large disagreement between the two models and the near-maximum entropy appropriately trigger the low-confidence pathway, routing the user to a physician consultation prompt rather than displaying a potentially misleading risk score. This example illustrates a scenario where the two models have learned genuinely different risk assessments from the same input profile, and presenting a single definitive risk score would be misleading.
 
 
 4.6 Calibration Analysis
@@ -372,10 +300,6 @@ Table 4.6: Ensemble Calibration Curve Data (10 Bins, Validation Subset)
 | 9   | 0.8313                     | 0.7153                        |
 | 10  | 0.9067                     | 0.6667                        |
 
-[INSERT FIGURE 4.19 HERE: Calibration curve (reliability diagram) for the consensus ensemble on the validation subset. X-axis: Mean predicted probability (0 to 1). Y-axis: Observed fraction of positives (0 to 1). Plot the 10 calibration bins as points connected by lines. Include a dashed diagonal reference line representing perfect calibration. Annotate the gap between the calibration curve and the diagonal to illustrate overestimation.]
-
-Figure 4.19: Consensus Ensemble Calibration Curve (10 Bins, Validation Subset)
-
 The calibration curve reveals that the ensemble model systematically overestimates CHD risk relative to the observed frequency of positive cases across most probability bins. In a perfectly calibrated model, the observed fraction of positives would equal the mean predicted probability in each bin (i.e., the calibration curve would follow the diagonal). The observed pattern shows that the ensemble predicts higher probabilities than are warranted by the actual outcome frequencies in the data.
 
 This overestimation is most pronounced in the mid-to-high probability bins (bins 5-8), where, for example, a mean predicted probability of 0.5480 (bin 6) corresponds to an observed positive rate of only 0.3069. In bin 10, the mean predicted probability of 0.9067 corresponds to an observed positive rate of 0.6667, representing a significant overestimation.
@@ -391,11 +315,11 @@ The complete CardioXAI framework was deployed as a Django web application, integ
 
 4.7.1 Landing Page
 
-The landing page introduces the CardioXAI system through a hero section communicating the framework's core value proposition: transparent, explainable CHD risk assessment using only self-reported behavioral data. Feature cards highlight the key differentiating capabilities of the system: SHAP-based explainability, uncertainty-aware predictions, and personalised lifestyle recommendations. A sample report link allows visitors to preview the results output format before completing an assessment.
+The landing page introduces the CardioXAI system through a hero section communicating the framework's core value proposition: transparent, explainable CHD risk assessment using only self-reported behavioral data. A sample risk score card is embedded in the hero section, displaying a representative 47% risk score with conic-gradient gauge animation, providing visitors with an immediate visual preview of the results output format. Feature cards highlight the key differentiating capabilities of the system: SHAP-based explainability, uncertainty-aware predictions, and personalised lifestyle recommendations. A "How It Works" section describes the three-step process (enter health details, receive analysis, explore results) in a visually segmented layout. A sample report link allows visitors to preview the full results output before completing an assessment.
 
-[INSERT FIGURE 4.20 HERE: Screenshot of the CardioXAI landing page showing the hero section, value proposition text, feature cards (SHAP explainability, uncertainty-aware predictions, lifestyle recommendations), and call-to-action button.]
+[INSERT FIGURE 4.1 HERE: Screenshot of the CardioXAI landing page showing the hero section with the sample 47% risk score card, feature cards (SHAP explainability, uncertainty-aware predictions, lifestyle recommendations), and the "How It Works" section.]
 
-Figure 4.20: CardioXAI Landing Page
+Figure 4.1: CardioXAI Landing Page
 
 4.7.2 Assessment Page
 
@@ -407,53 +331,75 @@ The assessment page implements a three-step form collecting the 16 input feature
 
 Client-side validation ensures that required fields are completed and that numeric inputs (BMI, health days) fall within physiologically plausible ranges. The form design follows a progressive disclosure pattern, preventing cognitive overload by presenting related questions in grouped steps rather than as a single long form.
 
-[INSERT FIGURE 4.21 HERE: Screenshot of the CardioXAI assessment page showing the three-step form. Capture Step 1 (Demographics) with age, sex, and BMI fields visible. Include the step indicator showing progress through the form.]
+[INSERT FIGURE 4.2 HERE: Screenshot of the CardioXAI assessment page showing Step 1 (Demographics) with age category selector, biological sex selector, and BMI input field. Include the step progress indicator showing Step 1 of 3.]
 
-Figure 4.21: CardioXAI Assessment Page (Step 1: Demographics)
+Figure 4.2: CardioXAI Assessment Page — Step 1 (Demographics)
 
-[INSERT FIGURE 4.22 HERE: Screenshot of the CardioXAI assessment page showing Step 2 (Medical History) with toggle/checkbox inputs for high blood pressure, high cholesterol, stroke, diabetes, and difficulty walking.]
+[INSERT FIGURE 4.3 HERE: Screenshot of the CardioXAI assessment page showing Step 2 (Medical History) with toggle or checkbox inputs for high blood pressure, high cholesterol, stroke, diabetes, and difficulty walking.]
 
-Figure 4.22: CardioXAI Assessment Page (Step 2: Medical History)
+Figure 4.3: CardioXAI Assessment Page — Step 2 (Medical History)
 
-[INSERT FIGURE 4.23 HERE: Screenshot of the CardioXAI assessment page showing Step 3 (Lifestyle) with inputs for smoking, physical activity, diet, alcohol, general health rating, and mental/physical health days.]
+[INSERT FIGURE 4.4 HERE: Screenshot of the CardioXAI assessment page showing Step 3 (Lifestyle) with inputs for smoking status, physical activity, fruit and vegetable consumption, heavy alcohol consumption, general health rating, and mental/physical health days.]
 
-Figure 4.23: CardioXAI Assessment Page (Step 3: Lifestyle)
+Figure 4.4: CardioXAI Assessment Page — Step 3 (Lifestyle)
 
 4.7.3 Results Page
 
-The results page presents the complete output of the CardioXAI inference engine:
+The results page presents the complete output of the CardioXAI inference engine, integrating all framework components into a vertically scrolling layout. Figure 4.5 shows the risk score gauge and confidence tier badge at the top of the results page.
 
-1. Risk Score and Gauge: A conic-gradient animated gauge displays the ensemble CHD risk score as a percentage, colour-coded by risk band (green for LOW, amber for MODERATE, red for HIGH). The risk band label is displayed prominently alongside the numerical score.
+1. Risk Score and Gauge: A conic-gradient animated gauge displays the ensemble CHD risk score as a percentage, colour-coded by risk band (green for LOW, amber for MODERATE, red for HIGH). The risk band label (e.g., "MODERATE RISK") is displayed prominently within the gauge alongside the numerical score. The gauge is implemented as a CSS conic-gradient arc with JavaScript-driven animation that sweeps from zero to the predicted risk score on page load.
 
-2. Confidence Tier Badge: The prediction's confidence tier (High, Medium, or Low) is displayed as a badge. Low-confidence predictions display a prominent advisory message directing users to consult a physician, and the risk score display is de-emphasised.
+2. Confidence Tier Badge: The prediction's confidence tier (High, Medium, or Low) is displayed as a badge beneath the gauge, using a checkmark icon for High confidence and a warning icon for Low confidence. Low-confidence predictions trigger a distinct display pathway described in Section 4.7.5.
 
-3. SHAP Explanation Chart: A bidirectional bar chart displays the top 8 features by absolute SHAP value, with red bars indicating risk-increasing factors and blue bars indicating protective factors. Each bar is labelled with the human-readable feature name and its SHAP value.
+[INSERT FIGURE 4.5 HERE: Screenshot of the CardioXAI results page showing the animated risk score gauge displaying the percentage score with the risk band label (e.g., "MODERATE RISK") inside the gauge, and the confidence tier badge (e.g., "High Confidence") beneath it.]
 
-4. LIME Explanation Panel: The top 8 LIME feature attributions are displayed as a secondary explanation layer, providing independent confirmation of the SHAP-identified risk drivers.
+Figure 4.5: CardioXAI Results Page — Risk Score Gauge and Confidence Tier Badge
 
-5. Knowledge Graph Visualisation: An inline SVG knowledge graph displays the network of risk factor relationships, personalised with the user's SHAP-identified risk drivers. A link to the full interactive Pyvis graph is provided for users who wish to explore the risk factor network in detail.
+3. SHAP Explanation Chart: A bidirectional horizontal bar chart displays the top features ranked by absolute SHAP value. Red bars extending rightward indicate risk-increasing factors, and blue bars extending leftward indicate protective factors. Each bar is labelled with the human-readable feature name and its numerical SHAP contribution value. Below the chart, a bulleted plain-language summary identifies the user's primary risk drivers and protective factors.
 
-6. Personalised Recommendations: Up to 5 evidence-based lifestyle recommendations are generated based on the user's SHAP-identified modifiable risk factors. Each recommendation includes an action title, a detailed explanation with specific behavioural targets (e.g., "Aim for at least 150 minutes of moderate aerobic activity per week"), and a clinical evidence note linking the recommendation to established cardiovascular guidelines.
+[INSERT FIGURE 4.6 HERE: Screenshot of the SHAP explanation section from the CardioXAI results page, showing the bidirectional bar chart with red bars for risk-increasing factors (e.g., "High BP +0.31", "Cholesterol +0.22") and blue bars for protective factors (e.g., "Vegetables -0.09"), followed by the bulleted plain-language summary.]
 
-7. Medical Disclaimer: A prominent disclaimer is displayed on all results pages, explicitly stating that CardioXAI is an informational self-assessment tool and is not intended to replace clinical diagnosis or medical advice.
+Figure 4.6: CardioXAI Results Page — SHAP Feature Attribution Chart
 
-[INSERT FIGURE 4.24 HERE: Screenshot of the CardioXAI results page showing the risk score gauge (conic-gradient circle with percentage), risk band label (LOW/MODERATE/HIGH), and confidence tier badge.]
+4. LIME Explanation Panel: The top 8 LIME feature attributions are displayed as a secondary explanation layer, rendered as horizontal bars with feature condition labels (e.g., "Age > 9", "GenHlth > 3"). This panel provides independent confirmation of the SHAP-identified risk drivers using a distinct explanation methodology.
 
-Figure 4.24: CardioXAI Results Page — Risk Score Gauge and Confidence Tier
+[INSERT FIGURE 4.7 HERE: Screenshot of the LIME explanation section from the CardioXAI results page, showing the horizontal bar chart with feature condition labels and LIME attribution weights.]
 
-[INSERT FIGURE 4.25 HERE: Screenshot of the CardioXAI results page showing the SHAP explanation chart section with the bidirectional bar chart (red bars for risk-increasing, blue bars for protective factors) and the LIME explanation panel below it.]
+Figure 4.7: CardioXAI Results Page — LIME Feature Attribution Panel
 
-Figure 4.25: CardioXAI Results Page — SHAP and LIME Explanation Panels
+5. Personalised Knowledge Graph (SVG): An inline SVG knowledge graph displays the user's SHAP-identified risk factors as colour-coded, interconnected nodes. Node size is proportional to the absolute SHAP value, and nodes are coloured by risk factor category (cardiovascular in red, metabolic in orange, lifestyle in green, health status in blue, demographic in grey). Risk-increasing nodes are annotated with their SHAP value (e.g., "SHAP +0.31"), while protective nodes display negative values (e.g., "SHAP -0.09"). Edges connect related risk factors, visually communicating the systemic, interconnected nature of the user's risk profile.
 
-[INSERT FIGURE 4.26 HERE: Screenshot of the CardioXAI results page showing the inline Knowledge Graph visualisation with colour-coded risk factor nodes and the personalised recommendations section with action cards.]
+[INSERT FIGURE 4.8 HERE: Screenshot of the personalised SVG knowledge graph from the CardioXAI results page, showing colour-coded nodes of varying sizes connected by edges. Nodes should display labels such as "High BP SHAP +0.31", "Cholesterol SHAP +0.22", "BMI SHAP +0.16", "Age SHAP non-mod.", "Inactivity SHAP +0.11", and "Vegetables SHAP -0.09".]
 
-Figure 4.26: CardioXAI Results Page — Knowledge Graph and Personalised Recommendations
+Figure 4.8: CardioXAI Results Page — Personalised Risk Factor Knowledge Graph (SVG)
 
-[INSERT FIGURE 4.27 HERE: Screenshot of a low-confidence prediction result, showing the de-emphasised risk score, the "Low Confidence" badge, and the prominent physician consultation advisory message.]
+6. Interactive Pyvis Knowledge Graph: A link beneath the inline SVG opens the full interactive Pyvis knowledge graph in a new page. This graph displays all 16 risk factor nodes and 29 clinical edges with hover-to-inspect tooltips showing each node's full description, clinical significance, and modifiability status. The force-directed ForceAtlas2 layout algorithm spatially clusters related risk factors, providing an exploration-oriented view of the complete CHD risk factor network.
 
-Figure 4.27: CardioXAI Results Page — Low-Confidence Prediction with Physician Consultation Routing
+[INSERT FIGURE 4.9 HERE: Screenshot of the full interactive Pyvis knowledge graph page showing all 16 risk factor nodes and 29 edges. Nodes are colour-coded by category with the ForceAtlas2 force-directed layout. Include a tooltip popup showing node details if possible.]
 
-4.7.4 API Endpoint
+Figure 4.9: CardioXAI Interactive Pyvis Knowledge Graph (Full View)
+
+7. Personalised Recommendations: Up to 5 evidence-based lifestyle recommendations are generated based on the user's SHAP-identified modifiable risk factors. Each recommendation card includes an icon, an action title (e.g., "Increase Physical Activity", "Monitor Your Blood Pressure"), a detailed explanation with specific behavioral targets (e.g., "Aim for at least 150 minutes of moderate aerobic activity per week"), and a clinical evidence note linking the recommendation to established cardiovascular guidelines.
+
+[INSERT FIGURE 4.10 HERE: Screenshot of the personalised recommendations section from the CardioXAI results page, showing the recommendation cards with icons, action titles, detailed explanations, and clinical evidence notes.]
+
+Figure 4.10: CardioXAI Results Page — Personalised Lifestyle Recommendations
+
+8. Medical Disclaimer: A prominent disclaimer is displayed on all results pages, explicitly stating that CardioXAI is an informational self-assessment tool and is not intended to replace clinical diagnosis or medical advice.
+
+4.7.4 Downloadable Report
+
+The results page includes a "Download Report" button that generates a printer-friendly version of the complete results output. The printable report includes the risk score, risk band, SHAP and LIME explanations, the knowledge graph, and personalised recommendations, formatted for PDF generation through the browser's native print-to-PDF functionality.
+
+4.7.5 Low-Confidence Prediction Handling
+
+When the uncertainty quantification engine classifies a prediction as low confidence (inter-model disagreement > 0.25 or predictive entropy > 0.95), the results page renders a distinct view. The risk score gauge is de-emphasised, the confidence tier badge displays a prominent "Low Confidence" warning, and a clearly worded advisory message directs the user to consult a physician rather than relying on the potentially unreliable risk estimate. The submitted assessment answers are displayed for the user's reference, but the full SHAP, LIME, and knowledge graph outputs are withheld to prevent interpretation of unreliable explanations.
+
+[INSERT FIGURE 4.11 HERE: Screenshot of the CardioXAI results page for a low-confidence prediction, showing the de-emphasised or hidden risk score, the "Low Confidence" warning badge, and the physician consultation advisory message.]
+
+Figure 4.11: CardioXAI Results Page — Low-Confidence Prediction with Physician Consultation Routing
+
+4.7.6 API Endpoint
 
 A JSON API endpoint (POST /api/predict/) is provided for programmatic access to the CardioXAI prediction engine. The API accepts the same input features as the web form and returns a comprehensive JSON response containing the risk score, risk band, confidence tier, all model probabilities, SHAP values, LIME attributions, and personalised recommendations. This endpoint enables integration with third-party health applications and supports future research use.
 
