@@ -1,0 +1,144 @@
+================================================================================
+             CARDIOXAI - PRESENTER SCRIPT / PROJECT OVERVIEW
+================================================================================
+
+OPENING (What is CardioXAI?)
+----------------------------
+CardioXAI is an Explainable AI web application that screens individuals for
+coronary heart disease (CHD) risk -- without requiring any lab tests, blood
+work, or clinical visits. A user simply answers questions about their age,
+lifestyle, and medical history through a guided web form, and the system
+returns a personalised risk score with full transparency into WHY that score
+was given.
+
+The core research question is: Can self-reported behavioural and demographic
+data, processed through explainable machine learning, produce clinically
+meaningful heart disease risk estimates that are both accurate and
+understandable to non-expert users?
+
+
+THE PROBLEM IT SOLVES
+---------------------
+Cardiovascular disease is the world's leading cause of death (~17.9 million
+deaths per year, WHO 2021). Existing screening tools like the Framingham Risk
+Score or QRISK3 require lab inputs -- cholesterol levels, blood pressure
+readings, fasting glucose -- creating a barrier for people without regular
+healthcare access. CardioXAI removes that barrier entirely by relying only
+on information a person already knows about themselves.
+
+
+DATASET
+-------
+- Source: CDC Behavioral Risk Factor Surveillance System (BRFSS)
+- Size: 253,680 adult observations (deduplicated to ~186,487 unique records)
+- Target: Binary classification -- CHD or No CHD (12.2% positive class)
+- Features used: 16 self-reported variables including:
+    Age, Sex, BMI, High Blood Pressure, High Cholesterol, Diabetes, Stroke,
+    Smoking status, Physical Activity, Fruit/Vegetable intake, Heavy Alcohol
+    Consumption, General Health, Mental Health days, Physical Health days,
+    Difficulty Walking
+- Split: 70% training / 15% validation / 15% test (stratified)
+- Class imbalance handled with SMOTE (applied to training set only)
+
+
+ML PIPELINE & MODELS
+---------------------
+Three classifiers trained to span the interpretability-performance spectrum:
+
+  1. Logistic Regression -- linear, inherently interpretable
+  2. Random Forest -- bagged ensemble of 200 trees
+  3. XGBoost -- gradient-boosted trees, strongest discriminator
+
+A weighted consensus ensemble is built from the two best models (XGBoost +
+Logistic Regression), weighted by their validation AUC-ROC scores. The
+ensemble achieves:
+  - AUC-ROC: 0.815 on the held-out test set
+  - Best F1 score among all models (0.413)
+  - Balanced precision-recall trade-off
+
+
+EXPLAINABILITY (The "XAI" in CardioXAI)
+----------------------------------------
+Every single prediction comes with dual-layer explainability:
+
+  1. SHAP (SHapley Additive exPlanations) -- computes each feature's
+     contribution to the prediction using game-theory-based Shapley values.
+     Displayed as a red/blue bar chart: red = risk-increasing, blue = protective.
+
+  2. LIME (Local Interpretable Model-Agnostic Explanations) -- creates a
+     local linear approximation by perturbing the input. Provides an
+     independent second opinion on what's driving the score.
+
+Additionally:
+  - Confidence tiers (High / Medium / Low) based on inter-model disagreement
+    and predictive entropy -- low-confidence predictions explicitly route users
+    toward professional consultation instead of showing a potentially
+    misleading score.
+  - Personalised recommendations -- up to 5 evidence-based lifestyle actions
+    derived from the user's own SHAP values (e.g., "Aim for a BMI below 25",
+    "Manage blood pressure below 130/80 mmHg").
+
+
+KNOWLEDGE GRAPH
+---------------
+An interactive CHD risk factor knowledge graph built with NetworkX and Pyvis:
+  - 16 nodes (one per risk factor), 28 clinically-established edges
+  - Nodes categorised: Cardiovascular, Metabolic, Lifestyle, Health Status,
+    Demographic
+  - Circle = modifiable factor, Diamond = non-modifiable
+  - Personalised to each user: node sizes weighted by the user's SHAP values
+  - Interactive: hover tooltips, drag-and-rearrange, physics-based layout
+
+
+TECHNOLOGY STACK
+----------------
+  Language:        Python 3.11
+  Web Framework:   Django 5.2 + Django REST Framework
+  ML Libraries:    scikit-learn, XGBoost, imbalanced-learn (SMOTE)
+  Explainability:  SHAP, LIME
+  Knowledge Graph: NetworkX, Pyvis
+  Data Processing: pandas, NumPy
+  Model Storage:   joblib
+  Frontend:        Django Templates, Bootstrap 5.3, Bootstrap Icons
+  Typography:      Public Sans (Google Fonts)
+  Deployment:      Gunicorn, WhiteNoise (static files)
+  Hosting:         Render (render.yaml included)
+
+
+ARCHITECTURE (3-Tier)
+---------------------
+  Presentation Layer:  Django Templates + Bootstrap 5
+                       Pages: Landing | About | 3-Step Assessment | Results
+
+  Application Layer:   Django Views + REST API (POST /api/predict/)
+                       Form validation, session management, JSON serialisation
+
+  ML Layer:            Data pipeline -> SMOTE -> Model training -> Ensemble
+                       SHAP explainer -> LIME explainer -> Knowledge Graph
+
+
+USER JOURNEY
+------------
+  1. User lands on the homepage, clicks "Start Assessment"
+  2. Guided 3-step form: Demographics -> Medical History -> Lifestyle
+  3. Submission triggers the ML pipeline in real time
+  4. Results dashboard shows:
+       - Animated risk gauge (Low / Moderate / High)
+       - SHAP bar chart (top 8 features)
+       - LIME explanation (independent second view)
+       - Confidence tier with explanation
+       - Interactive knowledge graph
+       - Personalised recommendations
+       - Downloadable report
+
+
+KEY TAKEAWAYS
+-------------
+  - No lab tests required -- accessible to anyone with internet access
+  - Fully transparent -- every prediction is explained, not just a number
+  - Uncertainty-aware -- unreliable predictions are flagged, not hidden
+  - Actionable -- converts risk awareness into concrete lifestyle guidance
+  - Research prototype -- not a diagnostic tool; always directs users to
+    consult a healthcare professional
+
+================================================================================
